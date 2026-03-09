@@ -12,6 +12,7 @@
 > Write text. Get a polished result. Instantly.
 
 <img src="https://i.ibb.co/Z6zVR7K8/Screenshot-2025-12-13-at-06-29-22.png">
+
 ---
 
 ## ✨ Why Netral?
