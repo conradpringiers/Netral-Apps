@@ -1,0 +1,365 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Netral Apps Design System - Notion/Linear inspired */
+
+@layer base {
+  :root {
+    /* Base colors - Clean neutral palette */
+    --background: 0 0% 100%;
+    --foreground: 220 13% 13%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 13%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 13%;
+
+    /* Primary - Subtle blue accent */
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Light gray */
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 13% 13%;
+
+    /* Muted tones */
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    /* Accent */
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 13% 13%;
+
+    /* Semantic colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+
+    /* Border & Input */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.5rem;
+
+    /* Editor specific */
+    --editor-bg: 220 14% 98%;
+    --editor-gutter: 220 9% 46%;
+    --editor-selection: 221 83% 53% / 0.15;
+    --editor-cursor: 221 83% 53%;
+
+    /* Preview specific */
+    --preview-bg: 0 0% 100%;
+    --preview-code-bg: 220 14% 96%;
+
+    /* Toolbar */
+    --toolbar-bg: 0 0% 100%;
+    --toolbar-border: 220 13% 91%;
+
+    /* Sidebar */
+    --sidebar-background: 220 14% 98%;
+    --sidebar-foreground: 220 13% 13%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 220 13% 13%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 221 83% 53%;
+  }
+
+  .dark {
+    --background: 224 14% 10%;
+    --foreground: 220 14% 96%;
+
+    --card: 224 14% 12%;
+    --card-foreground: 220 14% 96%;
+
+    --popover: 224 14% 12%;
+    --popover-foreground: 220 14% 96%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 224 14% 16%;
+    --secondary-foreground: 220 14% 96%;
+
+    --muted: 224 14% 16%;
+    --muted-foreground: 220 9% 56%;
+
+    --accent: 224 14% 16%;
+    --accent-foreground: 220 14% 96%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 224 14% 20%;
+    --input: 224 14% 20%;
+    --ring: 221 83% 53%;
+
+    --editor-bg: 224 14% 8%;
+    --editor-gutter: 220 9% 46%;
+    --editor-selection: 221 83% 53% / 0.2;
+    --editor-cursor: 221 83% 53%;
+
+    --preview-bg: 224 14% 10%;
+    --preview-code-bg: 224 14% 14%;
+
+    --toolbar-bg: 224 14% 12%;
+    --toolbar-border: 224 14% 20%;
+
+    --sidebar-background: 224 14% 8%;
+    --sidebar-foreground: 220 14% 96%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 224 14% 16%;
+    --sidebar-accent-foreground: 220 14% 96%;
+    --sidebar-border: 224 14% 20%;
+    --sidebar-ring: 221 83% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* CodeMirror theme overrides */
+  .cm-editor {
+    @apply h-full bg-transparent text-foreground;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  }
+
+  .cm-editor .cm-scroller {
+    @apply overflow-auto;
+    font-size: 14px;
+    line-height: 1.6;
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  .cm-editor .cm-scroller::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .cm-editor .cm-scroller::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .cm-editor .cm-scroller::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 10px;
+  }
+
+  .cm-editor .cm-scroller::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+
+  .cm-editor .cm-gutters {
+    @apply bg-transparent border-r border-border text-muted-foreground;
+    min-width: 48px;
+  }
+
+  .cm-editor .cm-lineNumbers .cm-gutterElement {
+    @apply text-muted-foreground text-xs px-2;
+  }
+
+  .cm-editor .cm-content {
+    @apply p-4;
+  }
+
+  .cm-editor .cm-line {
+    @apply px-0;
+  }
+
+  .cm-editor .cm-activeLine {
+    background: hsl(var(--editor-selection));
+  }
+
+  .cm-editor .cm-selectionBackground {
+    background: hsl(var(--editor-selection)) !important;
+  }
+
+  .cm-editor .cm-cursor {
+    border-left-color: hsl(var(--editor-cursor));
+  }
+
+  .cm-editor .cm-activeLineGutter {
+    @apply bg-transparent;
+  }
+
+  .cm-editor:focus-within {
+    @apply outline-none;
+  }
+
+  /* Preview prose styles */
+  .netral-preview {
+    @apply max-w-none;
+  }
+
+  .netral-preview h1 {
+    @apply text-3xl font-bold text-foreground mb-4 mt-6;
+  }
+
+  .netral-preview h2 {
+    @apply text-2xl font-semibold text-foreground mb-3 mt-5;
+  }
+
+  .netral-preview h3 {
+    @apply text-xl font-semibold text-foreground mb-2 mt-4;
+  }
+
+  .netral-preview p {
+    @apply text-foreground leading-relaxed mb-4;
+  }
+
+  .netral-preview a {
+    @apply text-primary hover:underline;
+  }
+
+  .netral-preview code {
+    @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+  }
+
+  .netral-preview pre {
+    @apply bg-muted p-4 rounded-lg overflow-x-auto mb-4;
+  }
+
+  .netral-preview pre code {
+    @apply bg-transparent p-0;
+  }
+
+  .netral-preview blockquote {
+    @apply border-l-4 border-primary pl-4 italic text-muted-foreground my-4;
+  }
+
+  .netral-preview ul,
+  .netral-preview ol {
+    @apply mb-4 pl-6;
+  }
+
+  .netral-preview li {
+    @apply mb-1;
+  }
+
+  .netral-preview img {
+    @apply rounded-lg max-w-full h-auto;
+  }
+
+  .netral-preview hr {
+    @apply border-border my-6;
+  }
+
+  .netral-preview table {
+    @apply w-full border-collapse mb-4;
+  }
+
+  .netral-preview th,
+  .netral-preview td {
+    @apply border border-border px-4 py-2 text-left;
+  }
+
+  .netral-preview th {
+    @apply bg-muted font-semibold;
+  }
+
+  /* Custom Netral components */
+  .netral-button {
+    @apply inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md font-medium text-sm transition-all hover:opacity-90 cursor-pointer no-underline;
+  }
+
+  .netral-block {
+    @apply p-4 rounded-lg mb-4 border;
+  }
+
+  .netral-block.warning {
+    @apply bg-warning/10 border-warning text-foreground;
+  }
+
+  .netral-block.info {
+    @apply bg-info/10 border-info text-foreground;
+  }
+
+  .netral-block.success {
+    @apply bg-success/10 border-success text-foreground;
+  }
+
+  .netral-block.error {
+    @apply bg-destructive/10 border-destructive text-foreground;
+  }
+
+  .netral-gallery {
+    @apply grid gap-2 mb-4;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .netral-gallery img {
+    @apply w-full h-40 object-cover rounded-lg;
+  }
+}
+
+@layer utilities {
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Scrollbar styles */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
