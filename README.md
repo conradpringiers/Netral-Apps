@@ -80,6 +80,61 @@ This document summarizes the project progress...
 Callout[info;All milestones have been completed on time.]
 ```
 
+
+### 📈 Netral Calus (NEW)
+Netral now expands into mathematics with Calus, a clean and interactive tool for calculations, equations, and graphing.
+
+**✨ Features**
+- **Calculations**
+Supports both simple and advanced math expressions
+
+```
+1 + 1 = 2
+sin(pi / 2) = 1
+```
+
+- **Equation solving** (first-degree only for now)
+
+```
+2x + 5 = 15 → x = 5
+```
+
+- **Function plotting**
+Visualize functions on a Cartesian plane
+
+```
+f(x) = 2x^2 + sin(4)
+```
+
+- **Variable system**
+Assign reusable variables across expressions
+
+```
+x = 12
+z = x + 3
+z / 2 → 7.5
+```
+
+**🎨 Fun examples**
+
+```
+- Heart ❤️
+f(x) = abs(x)^(2/3) + sqrt(1 - x^2)
+g(x) = abs(x)^(2/3) - sqrt(1 - x^2)
+
+- Pacman
+f(x) = sqrt(1 - x^2)
+g(x) = -sqrt(1 - x^2)
+h(x) = abs(x)
+```
+
+**⚠️ Limitations**
+
+Equation solving limited to first-degree
+Complex functions may render imperfectly
+Graph scaling depends on window size
+
+
 ### 🔜 Coming Soon
 - **🎓 Netral Luate** — Interactive quizzes and exercises for education
 - **⚡️ Netral Flow** — A visual programming language
