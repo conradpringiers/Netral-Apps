@@ -1,6 +1,7 @@
 /**
  * Share Button Component
- * Compresses content into a shareable URL
+ * Compresses content into shareable URL(s).
+ * Block mode offers both an editor link and a direct web page link.
  */
 
 import { useState } from 'react';
@@ -20,30 +21,57 @@ const BASE_URL = 'https://netral-apps-betasigma.netlify.app';
 
 interface ShareButtonProps {
   content: string;
-  mode: 'block' | 'deck' | 'doc';
+  mode: 'block' | 'deck' | 'doc' | 'luate';
+}
+
+interface ShareLink {
+  id: string;
+  label: string;
+  hint: string;
+  url: string;
 }
 
 export function ShareButton({ content, mode }: ShareButtonProps) {
   const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const generateLink = () => {
+  const links: ShareLink[] = (() => {
     const compressed = compressToEncodedURIComponent(content);
-    return `${BASE_URL}/?mode=${mode}&c=${compressed}`;
-  };
+    if (mode === 'block') {
+      return [
+        {
+          id: 'editor',
+          label: 'Editor link',
+          hint: 'Opens the site in the Netral editor.',
+          url: `${BASE_URL}/?mode=block&c=${compressed}`,
+        },
+        {
+          id: 'site',
+          label: 'Direct web page',
+          hint: 'Opens the rendered site, without the editor.',
+          url: `${BASE_URL}/?view=site&c=${compressed}`,
+        },
+      ];
+    }
+    return [
+      {
+        id: 'editor',
+        label: 'Share link',
+        hint: 'Anyone who opens it can view and edit a copy.',
+        url: `${BASE_URL}/?mode=${mode}&c=${compressed}`,
+      },
+    ];
+  })();
 
-  const handleCopy = () => {
-    const link = generateLink();
-    navigator.clipboard.writeText(link).then(() => {
-      setCopied(true);
-      toast({ title: 'Link copied!', description: 'The share link has been copied to your clipboard.' });
-      setTimeout(() => setCopied(false), 2000);
+  const handleCopy = (link: ShareLink) => {
+    navigator.clipboard.writeText(link.url).then(() => {
+      setCopiedId(link.id);
+      toast({ title: 'Link copied!', description: `${link.label} has been copied to your clipboard.` });
+      setTimeout(() => setCopiedId(null), 2000);
     }).catch(() => {
       toast({ title: 'Error', description: 'Could not copy the link.', variant: 'destructive' });
     });
   };
-
-  const link = open ? generateLink() : '';
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -56,28 +84,36 @@ export function ShareButton({ content, mode }: ShareButtonProps) {
         <DialogHeader>
           <DialogTitle>Share by link</DialogTitle>
         </DialogHeader>
-        <div className="space-y-3 pt-2">
+        <div className="space-y-4 pt-2">
           <p className="text-sm text-muted-foreground">
-            This link contains all the content. Anyone who opens it can view and edit a copy.
+            This link contains all the content. Anyone who opens it can view it, and an editor link lets them edit a copy.
           </p>
-          <div className="flex gap-2">
-            <input
-              readOnly
-              value={link}
-              className="flex-1 px-3 py-2 text-xs bg-muted border border-border rounded-md font-mono truncate"
-            />
-            <Button size="sm" onClick={handleCopy} className="gap-2 shrink-0">
-              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              {copied ? 'Copied' : 'Copy'}
-            </Button>
-          </div>
-          {link.length > 8000 && (
-            <p className="text-xs text-destructive">
-              ⚠ The link is very long ({Math.round(link.length / 1000)}k chars). Some browsers may truncate it.
-            </p>
-          )}
+          {links.map((link) => (
+            <div key={link.id} className="space-y-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm font-medium">{link.label}</span>
+                <Button size="sm" onClick={() => handleCopy(link)} className="gap-2 shrink-0">
+                  {copiedId === link.id ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  {copiedId === link.id ? 'Copied' : 'Copy'}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">{link.hint}</p>
+              <input
+                readOnly
+                value={link.url}
+                className="w-full px-3 py-2 text-xs bg-muted border border-border rounded-md font-mono truncate"
+              />
+              {link.url.length > 8000 && (
+                <p className="text-xs text-destructive">
+                  ⚠ The link is very long ({Math.round(link.url.length / 1000)}k chars). Some browsers may truncate it.
+                </p>
+              )}
+            </div>
+          ))}
         </div>
       </DialogContent>
     </Dialog>
   );
 }
+
+export default ShareButton;

@@ -6,13 +6,10 @@
 </p>
 
 # Netral — Create Without Limits
-<h2><a href="https://netral-apps-betasigma.netlify.app">Try it online</a></h2>
 
 **Netral** is a browser-based suite of creative tools that turns simple, human-readable syntax into beautiful websites, presentations, and documents — no design skills or complex code required.
 
 > Write text. Get a polished result. Instantly.
-
-<img src="https://i.ibb.co/Z6zVR7K8/Screenshot-2025-12-13-at-06-29-22.png">
 
 ---
 
@@ -31,7 +28,7 @@ Netral bridges the gap between **simplicity** and **polish**. If you can write a
 
 ## 🧰 The Suite
 
-### 🌐 Netral Block
+### 🔷 Netral Block
 Create **full websites** with components like navbars, hero sections, feature grids, pricing tables, testimonials, FAQs, and more — all with a clean markup syntax.
 
 ```
@@ -48,7 +45,7 @@ Feature[
 ]
 ```
 
-### 📺 Netral Deck
+### 🟣 Netral Deck
 Build **presentations** with slides, columns, charts, speaker notes, and presenter mode — all from text.
 
 ```
@@ -66,7 +63,7 @@ Stats[
 ]
 ```
 
-### 📄 Netral Doc
+### 🟢 Netral Doc
 Create **structured documents** with sections, callouts, tables, and export to PDF or `.netdoc` files.
 
 ```
@@ -80,64 +77,9 @@ This document summarizes the project progress...
 Callout[info;All milestones have been completed on time.]
 ```
 
-
-### 📈 Netral Calus (NEW)
-Netral now expands into mathematics with Calus, a clean and interactive tool for calculations, equations, and graphing.
-
-**✨ Features**
-- **Calculations**
-Supports both simple and advanced math expressions
-
-```
-1 + 1 = 2
-sin(pi / 2) = 1
-```
-
-- **Equation solving** (first-degree only for now)
-
-```
-2x + 5 = 15 → x = 5
-```
-
-- **Function plotting**
-Visualize functions on a Cartesian plane
-
-```
-f(x) = 2x^2 + sin(4)
-```
-
-- **Variable system**
-Assign reusable variables across expressions
-
-```
-x = 12
-z = x + 3
-z / 2 → 7.5
-```
-
-**🎨 Fun examples**
-
-```
-- Heart ❤️
-f(x) = abs(x)^(2/3) + sqrt(1 - x^2)
-g(x) = abs(x)^(2/3) - sqrt(1 - x^2)
-
-- Pacman
-f(x) = sqrt(1 - x^2)
-g(x) = -sqrt(1 - x^2)
-h(x) = abs(x)
-```
-
-**⚠️ Limitations**
-
-Equation solving limited to first-degree
-Complex functions may render imperfectly
-Graph scaling depends on window size
-
-
 ### 🔜 Coming Soon
-- **🎓 Netral Luate** — Interactive quizzes and exercises for education
-- **⚡️ Netral Flow** — A visual programming language
+- **Netral Luate** — Interactive quizzes and exercises for education
+- **Netral Flow** — A visual programming language
 
 ---
 
@@ -149,7 +91,7 @@ Graph scaling depends on window size
 
 ---
 
-## 🚀 Getting Started (Local Installation from repo)
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -170,7 +112,7 @@ npm install
 npm run dev
 ```
 
-The app will be available at `http://localhost:8080`.
+The app will be available at `http://localhost:5173`.
 
 ### Build for Production
 
@@ -281,10 +223,7 @@ A: Yes! Netral extends Markdown with custom components like `Feature[...]`, `Sta
 A: Block exports to HTML, Doc exports to PDF (via print) or `.netdoc`, and Deck runs as a fullscreen presentation. All modes support shareable URLs.
 
 **Q: Is it free?**
-A: YES! Netral apps is free and open source. I work 100% for free because I believe that decent productivity tools should be free. My primary goal is to help as many people as possible. However, if you are satisfied, you are of course welcome to make a donation..
-
-**Q: Did AI helped ?**
-A: Yes, as my abilities as a 16-year-old were limited, I used AI to help me finish the project on time (especially in v2.0), but the concept and design are 100% mine...
+A: Yes, Netral is open source and free to use.
 
 ---
 
@@ -298,4 +237,3 @@ This project is open source. See the [LICENSE](LICENSE) file for details.
   <strong>Netral</strong> — Create without limits.<br/>
   <sub>Built with ❤️ using React, TypeScript & Tailwind CSS</sub>
 </p>
-# Netral-Apps

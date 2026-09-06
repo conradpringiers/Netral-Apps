@@ -1,554 +1,321 @@
 /**
  * Netral Calus Parser & Evaluator
- * Parses math expressions, function definitions, equations, and implicit curves.
- *
- * Supported syntax:
- *   2 + 3 * 4           → arithmetic
- *   sqrt(16)            → 4
- *   sin(pi/2)           → 1
- *   x = 5               → variable assignment
- *   f(x) = x^2 + 1     → function definition (plotted)
- *   2x + 5 = 15         → equation solving → x = 5
- *   (x-a)²+(y-b)²=r²   → circle (implicit curve, plotted)
+ * Uses math.js for robust computation, equation solving, and implicit curve support.
+ * Performance: expressions are pre-compiled with math.compile() for fast repeated evaluation.
  */
+
+import { create, all, MathNode, EvalFunction } from 'mathjs';
+
+const math = create(all, {});
 
 // ─── Types ───────────────────────────────────────────────────────────────
 
 export interface CalusResult {
-  type:
-    | "value"
-    | "assignment"
-    | "function"
-    | "plot"
-    | "error"
-    | "empty"
-    | "comment"
-    | "equation"
-    | "circle";
+  type: 'value' | 'assignment' | 'function' | 'plot' | 'error' | 'empty' | 'comment' | 'equation' | 'implicit' | 'stats';
   input: string;
   output: string;
   name?: string;
   value?: number;
   plotFn?: (x: number) => number;
+  implicitFn?: (x: number, y: number) => number;
   color?: string;
-  // Circle data
-  circle?: { cx: number; cy: number; r: number };
 }
 
 interface CalusContext {
   variables: Record<string, number>;
   functions: Record<string, { param: string; expr: string }>;
+  scope: Record<string, any>;
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────
 
 const PLOT_COLORS = [
-  "hsl(220, 90%, 56%)",
-  "hsl(0, 84%, 60%)",
-  "hsl(142, 71%, 45%)",
-  "hsl(280, 68%, 55%)",
-  "hsl(25, 95%, 53%)",
-  "hsl(190, 90%, 50%)",
-  "hsl(340, 82%, 52%)",
-  "hsl(45, 93%, 47%)",
+  'hsl(220, 90%, 56%)',
+  'hsl(0, 84%, 60%)',
+  'hsl(142, 71%, 45%)',
+  'hsl(280, 68%, 55%)',
+  'hsl(25, 95%, 53%)',
+  'hsl(190, 90%, 50%)',
+  'hsl(340, 82%, 52%)',
+  'hsl(45, 93%, 47%)',
 ];
 
-const MATH_CONSTANTS: Record<string, number> = {
-  pi: Math.PI,
-  PI: Math.PI,
-  e: Math.E,
-  E: Math.E,
-  tau: Math.PI * 2,
-  phi: (1 + Math.sqrt(5)) / 2,
-  inf: Infinity,
-};
+// ─── Helpers ─────────────────────────────────────────────────────────────
 
-const MATH_FUNCTIONS: Record<string, (x: number) => number> = {
-  sin: Math.sin,
-  cos: Math.cos,
-  tan: Math.tan,
-  asin: Math.asin,
-  acos: Math.acos,
-  atan: Math.atan,
-  abs: Math.abs,
-  sqrt: Math.sqrt,
-  cbrt: Math.cbrt,
-  log: Math.log,
-  log2: Math.log2,
-  log10: Math.log10,
-  ln: Math.log,
-  exp: Math.exp,
-  ceil: Math.ceil,
-  floor: Math.floor,
-  round: Math.round,
-  sign: Math.sign,
-};
-
-// ─── Tokenizer & Evaluator ──────────────────────────────────────────────
-
-function tokenize(expr: string): string[] {
-  const tokens: string[] = [];
-  let i = 0;
-  while (i < expr.length) {
-    if (/\s/.test(expr[i])) {
-      i++;
-      continue;
-    }
-    // Unicode ² ³
-    if (expr[i] === "²") {
-      tokens.push("^", "2");
-      i++;
-      continue;
-    }
-    if (expr[i] === "³") {
-      tokens.push("^", "3");
-      i++;
-      continue;
-    }
-    // Number
-    if (/[0-9.]/.test(expr[i])) {
-      let num = "";
-      while (i < expr.length && /[0-9.]/.test(expr[i])) {
-        num += expr[i++];
-      }
-      // Implicit multiplication: 2x, 2pi, 2sin(x)
-      if (i < expr.length && /[a-zA-Z_(]/.test(expr[i])) {
-        tokens.push(num, "*");
-      } else {
-        tokens.push(num);
-      }
-      continue;
-    }
-    // Identifier
-    if (/[a-zA-Z_]/.test(expr[i])) {
-      let id = "";
-      while (i < expr.length && /[a-zA-Z_0-9]/.test(expr[i])) {
-        id += expr[i++];
-      }
-      tokens.push(id);
-      // Implicit multiplication: x(... or variable followed by number/variable
-      // e.g., xy → x * y (but not function calls)
-      if (i < expr.length && /[0-9]/.test(expr[i]) && !MATH_FUNCTIONS[id]) {
-        tokens.push("*");
-      }
-      continue;
-    }
-    // Operators
-    if (expr[i] === "*" && expr[i + 1] === "*") {
-      tokens.push("**");
-      i += 2;
-      continue;
-    }
-    tokens.push(expr[i++]);
-  }
-  return tokens;
+function formatNumber(n: number): string {
+  if (Number.isNaN(n)) return 'NaN';
+  if (!Number.isFinite(n)) return n > 0 ? '∞' : '-∞';
+  if (Number.isInteger(n)) return n.toString();
+  return parseFloat(n.toFixed(8)).toString();
 }
 
-function evaluate(
-  expr: string,
-  vars: Record<string, number>,
-  funcs: Record<string, { param: string; expr: string }>,
-): number {
-  const tokens = tokenize(expr);
-  let pos = 0;
-
-  function peek(): string | undefined {
-    return tokens[pos];
-  }
-  function consume(): string {
-    return tokens[pos++];
-  }
-
-  function parseExpr(): number {
-    let left = parseTerm();
-    while (peek() === "+" || peek() === "-") {
-      const op = consume();
-      const right = parseTerm();
-      left = op === "+" ? left + right : left - right;
-    }
-    return left;
-  }
-
-  function parseTerm(): number {
-    let left = parsePower();
-    while (peek() === "*" || peek() === "/" || peek() === "%") {
-      const op = consume();
-      const right = parsePower();
-      if (op === "*") left *= right;
-      else if (op === "/") left /= right;
-      else left %= right;
-    }
-    return left;
-  }
-
-  function parsePower(): number {
-    let base = parseUnary();
-    while (peek() === "^" || peek() === "**") {
-      consume();
-      const exp = parseUnary();
-      base = Math.pow(base, exp);
-    }
-    return base;
-  }
-
-  function parseUnary(): number {
-    if (peek() === "-") {
-      consume();
-      return -parseAtom();
-    }
-    if (peek() === "+") {
-      consume();
-      return parseAtom();
-    }
-    return parseAtom();
-  }
-
-  function parseAtom(): number {
-    const tok = peek();
-    if (!tok) throw new Error("Unexpected end of expression");
-
-    if (/^[0-9.]/.test(tok)) {
-      consume();
-      return parseFloat(tok);
-    }
-
-    if (tok === "(") {
-      consume();
-      const val = parseExpr();
-      if (peek() === ")") consume();
-      return val;
-    }
-
-    if (tok === "|") {
-      consume();
-      const val = parseExpr();
-      if (peek() === "|") consume();
-      return Math.abs(val);
-    }
-
-    if (/^[a-zA-Z_]/.test(tok)) {
-      consume();
-
-      if (MATH_FUNCTIONS[tok] && peek() === "(") {
-        consume();
-        const arg = parseExpr();
-        if (peek() === ")") consume();
-        return MATH_FUNCTIONS[tok](arg);
-      }
-
-      if (funcs[tok] && peek() === "(") {
-        consume();
-        const arg = parseExpr();
-        if (peek() === ")") consume();
-        const fn = funcs[tok];
-        return evaluate(fn.expr, { ...vars, [fn.param]: arg }, funcs);
-      }
-
-      if (MATH_CONSTANTS[tok] !== undefined) return MATH_CONSTANTS[tok];
-      if (vars[tok] !== undefined) return vars[tok];
-
-      throw new Error(`Unknown: ${tok}`);
-    }
-
-    throw new Error(`Unexpected: ${tok}`);
-  }
-
-  return parseExpr();
+/** Normalize unicode superscripts */
+function normalize(expr: string): string {
+  return expr.replace(/²/g, '^2').replace(/³/g, '^3');
 }
 
-// ─── Equation Solver ─────────────────────────────────────────────────────
-
-/**
- * Tries to solve a linear equation in one unknown.
- * Supports: ax + b = c, b + ax = c, etc.
- * Returns { variable, value } or null.
- */
-function solveLinearEquation(
-  lhs: string,
-  rhs: string,
-  vars: Record<string, number>,
-  funcs: Record<string, { param: string; expr: string }>,
-): { variable: string; value: number } | null {
-  // Find the unknown variable (not a known constant or variable)
-  const allTokens = tokenize(lhs + " " + rhs);
-  const unknowns = new Set<string>();
-  for (const t of allTokens) {
-    if (
-      /^[a-zA-Z_]\w*$/.test(t) &&
-      !MATH_CONSTANTS[t] &&
-      !MATH_FUNCTIONS[t] &&
-      vars[t] === undefined
-    ) {
-      unknowns.add(t);
-    }
-  }
-
-  if (unknowns.size !== 1) return null;
-  const variable = [...unknowns][0];
-
-  // Evaluate both sides at variable=0 and variable=1 to find linear coefficients
-  // f(v) = lhs - rhs; solve f(v) = 0
+/** Check which free variables exist in an expression */
+function freeVariables(expr: string, knownVars: Set<string>): Set<string> {
+  const vars = new Set<string>();
   try {
-    const f0 =
-      evaluate(lhs, { ...vars, [variable]: 0 }, funcs) -
-      evaluate(rhs, { ...vars, [variable]: 0 }, funcs);
-    const f1 =
-      evaluate(lhs, { ...vars, [variable]: 1 }, funcs) -
-      evaluate(rhs, { ...vars, [variable]: 1 }, funcs);
+    const node = math.parse(normalize(expr));
+    node.traverse((n: MathNode) => {
+      if (n.type === 'SymbolNode' && !(n as any).isFunctionName) {
+        const name = (n as any).name as string;
+        if (['pi', 'e', 'i', 'Infinity', 'NaN', 'true', 'false'].includes(name)) return;
+        if (!knownVars.has(name)) vars.add(name);
+      }
+    });
+  } catch { /* ignore parse errors */ }
+  return vars;
+}
 
-    // Linear: f(v) = a*v + b where a = f1 - f0, b = f0
-    const a = f1 - f0;
-    const b = f0;
+/** Compile an expression once, return a fast evaluator */
+function compileExpr(expr: string): EvalFunction {
+  return math.compile(normalize(expr));
+}
 
-    if (Math.abs(a) < 1e-12) return null; // no solution or infinite
+/** Safely evaluate with mathjs scope */
+function safeEval(expr: string, scope: Record<string, any>): number {
+  const result = math.evaluate(normalize(expr), { ...scope });
+  if (typeof result === 'number') return result;
+  if (typeof result?.toNumber === 'function') return result.toNumber();
+  if (typeof result === 'object' && result !== null && 'value' in result) return Number(result.value);
+  return Number(result);
+}
 
-    const value = -b / a;
+/** Fast eval from a pre-compiled expression */
+function evalCompiled(compiled: EvalFunction, scope: Record<string, any>): number {
+  try {
+    const result = compiled.evaluate({ ...scope });
+    if (typeof result === 'number') return result;
+    if (typeof result?.toNumber === 'function') return result.toNumber();
+    return Number(result);
+  } catch {
+    return NaN;
+  }
+}
 
-    // Verify it's actually linear by checking f(2)
-    const f2 =
-      evaluate(lhs, { ...vars, [variable]: 2 }, funcs) -
-      evaluate(rhs, { ...vars, [variable]: 2 }, funcs);
-    const expectedF2 = a * 2 + b;
-    if (Math.abs(f2 - expectedF2) > 1e-6) return null; // non-linear
+// ─── Statistics helpers ──────────────────────────────────────────────────
 
-    return { variable, value };
+const STATS_FUNCTIONS: Record<string, (args: number[]) => number | string> = {
+  mean: (a) => math.mean(a) as number,
+  median: (a) => math.median(a) as number,
+  std: (a) => math.std(a) as unknown as number,
+  variance: (a) => math.variance(a) as unknown as number,
+  min: (a) => Math.min(...a),
+  max: (a) => Math.max(...a),
+  sum: (a) => a.reduce((s, v) => s + v, 0),
+  count: (a) => a.length,
+};
+
+function tryStatsCall(line: string, scope: Record<string, any>): { fn: string; result: number | string } | null {
+  const m = line.match(/^(mean|median|std|variance|min|max|sum|count)\s*\((.+)\)$/i);
+  if (!m) return null;
+  const fn = m[1].toLowerCase();
+  const handler = STATS_FUNCTIONS[fn];
+  if (!handler) return null;
+  try {
+    const args = m[2].split(',').map(s => safeEval(s.trim(), scope));
+    const result = handler(args);
+    return { fn, result };
   } catch {
     return null;
   }
 }
 
-// ─── Circle Detection ────────────────────────────────────────────────────
+// ─── Equation Solver ─────────────────────────────────────────────────────
 
-/**
- * Detects circle equations of the form (x-a)²+(y-b)²=r² or x²+y²=r²
- * Returns { cx, cy, r } or null.
- */
-function detectCircle(
+function solveEquation(
   lhs: string,
   rhs: string,
-  vars: Record<string, number>,
-  funcs: Record<string, { param: string; expr: string }>,
-): { cx: number; cy: number; r: number } | null {
-  // Normalize: replace ² with ^2
-  const norm = (s: string) => s.replace(/²/g, "^2").replace(/³/g, "^3");
-  const lhsN = norm(lhs);
-  const rhsN = norm(rhs);
+  scope: Record<string, any>,
+  knownVars: Set<string>
+): { solutions: { variable: string; values: number[] } } | null {
+  const allVars = new Set([...freeVariables(lhs, knownVars), ...freeVariables(rhs, knownVars)]);
+  if (allVars.has('x') && allVars.has('y')) return null;
+  
+  let variable: string;
+  if (allVars.size === 1) {
+    variable = [...allVars][0];
+  } else {
+    return null;
+  }
 
-  // Check if both x and y appear
-  const combined = lhsN + " " + rhsN;
-  if (!combined.includes("x") || !combined.includes("y")) return null;
+  // Pre-compile both sides for fast evaluation
+  let compiledLhs: EvalFunction, compiledRhs: EvalFunction;
+  try {
+    compiledLhs = compileExpr(lhs);
+    compiledRhs = compileExpr(rhs);
+  } catch { return null; }
 
-  // Strategy: evaluate lhs - rhs at several (x,y) points to determine
-  // if it matches Ax² + Bx + Cy² + Dy + E = 0 with A=C (circle condition)
-  // Use 6 sample points to find 5 unknowns: A, B, C, D, E
-
-  const evalAt = (xv: number, yv: number): number => {
-    try {
-      const v = { ...vars, x: xv, y: yv };
-      return evaluate(lhsN, v, funcs) - evaluate(rhsN, v, funcs);
-    } catch {
-      return NaN;
-    }
+  const makeF = (v: number): number => {
+    const s = { ...scope, [variable]: v };
+    return evalCompiled(compiledLhs, s) - evalCompiled(compiledRhs, s);
   };
 
-  // f(x,y) = A*x² + B*x + C*y² + D*y + E = 0
-  // Sample points to extract coefficients
-  const f00 = evalAt(0, 0); // E
-  const f10 = evalAt(1, 0); // A + B + E
-  const f01 = evalAt(0, 1); // C + D + E
-  const fm10 = evalAt(-1, 0); // A - B + E
-  const f0m1 = evalAt(0, -1); // C - D + E
+  const f0 = makeF(0), f1 = makeF(1), f2 = makeF(2), f3 = makeF(3), f4 = makeF(4);
+  if ([f0, f1, f2, f3, f4].some(v => isNaN(v) || !isFinite(v))) return null;
 
-  if ([f00, f10, f01, fm10, f0m1].some((v) => isNaN(v) || !isFinite(v)))
-    return null;
+  // Linear check
+  const a1 = f1 - f0;
+  if (Math.abs(f2 - (a1 * 2 + f0)) < 1e-6) {
+    if (Math.abs(a1) < 1e-12) return null;
+    return { solutions: { variable, values: [-f0 / a1] } };
+  }
 
-  const E = f00;
-  const ApB = f10 - E; // A + B
-  const AmB = fm10 - E; // A - B
-  const A = (ApB + AmB) / 2;
-  const B = (ApB - AmB) / 2;
-  const CpD = f01 - E; // C + D
-  const CmD = f0m1 - E; // C - D
-  const C = (CpD + CmD) / 2;
-  const D = (CpD - CmD) / 2;
+  // Quadratic check
+  const fm1 = makeF(-1);
+  const c = f0;
+  const aPlusB = f1 - c;
+  const aMinusB = fm1 - c;
+  const a = (aPlusB + aMinusB) / 2;
+  const b = (aPlusB - aMinusB) / 2;
 
-  // Circle condition: A ≈ C and A > 0
-  if (Math.abs(A - C) > 1e-6 || A < 1e-12) return null;
+  if (Math.abs(f2 - (a * 4 + b * 2 + c)) < 1e-4) {
+    const disc = b * b - 4 * a * c;
+    if (disc < -1e-10) return { solutions: { variable, values: [] } };
+    if (Math.abs(disc) < 1e-10) return { solutions: { variable, values: [-b / (2 * a)] } };
+    const sqrtDisc = Math.sqrt(disc);
+    return { solutions: { variable, values: [(-b + sqrtDisc) / (2 * a), (-b - sqrtDisc) / (2 * a)] } };
+  }
 
-  // Verify with another point
-  const f11 = evalAt(1, 1);
-  const expected = A * 1 + B * 1 + C * 1 + D * 1 + E;
-  if (Math.abs(f11 - expected) > 1e-4) return null;
-
-  // Standard form: A(x² + B/A x) + A(y² + D/A y) + E = 0
-  // A(x + B/(2A))² + A(y + D/(2A))² = B²/(4A) + D²/(4A) - E
-  const cx = -B / (2 * A);
-  const cy = -D / (2 * A);
-  const rSq = (B * B + D * D) / (4 * A * A) - E / A;
-
-  if (rSq <= 0) return null;
-
-  return { cx, cy, r: Math.sqrt(rSq) };
+  // Higher degree: scan + bisection
+  const roots: number[] = [];
+  const scanRange = 50, scanSteps = 500;
+  for (let i = 0; i < scanSteps; i++) {
+    const v1 = -scanRange + (i / scanSteps) * 2 * scanRange;
+    const v2 = -scanRange + ((i + 1) / scanSteps) * 2 * scanRange;
+    const fv1 = makeF(v1), fv2 = makeF(v2);
+    if (isNaN(fv1) || isNaN(fv2)) continue;
+    if (fv1 * fv2 <= 0) {
+      let lo = v1, hi = v2;
+      for (let j = 0; j < 40; j++) {
+        const mid = (lo + hi) / 2;
+        if (makeF(mid) * makeF(lo) <= 0) hi = mid; else lo = mid;
+      }
+      const root = (lo + hi) / 2;
+      if (!roots.some(r => Math.abs(r - root) < 1e-6)) roots.push(root);
+    }
+  }
+  if (roots.length > 0) return { solutions: { variable, values: roots.sort((a, b) => a - b) } };
+  return null;
 }
 
 // ─── Main Parse Function ─────────────────────────────────────────────────
 
 export function parseCalus(source: string): CalusResult[] {
-  const lines = source.split("\n");
-  const ctx: CalusContext = { variables: {}, functions: {} };
+  const lines = source.split('\n');
+  const ctx: CalusContext = { variables: {}, functions: {}, scope: {} };
   const results: CalusResult[] = [];
   let colorIdx = 0;
 
   for (const rawLine of lines) {
     const line = rawLine.trim();
 
-    if (!line) {
-      results.push({ type: "empty", input: rawLine, output: "" });
-      continue;
-    }
-
-    if (line.startsWith("#") || line.startsWith("//")) {
-      results.push({ type: "comment", input: rawLine, output: "" });
-      continue;
-    }
+    if (!line) { results.push({ type: 'empty', input: rawLine, output: '' }); continue; }
+    if (line.startsWith('#') || line.startsWith('//')) { results.push({ type: 'comment', input: rawLine, output: '' }); continue; }
 
     try {
-      // Function definition: f(x) = expr
-      const fnMatch = line.match(
-        /^([a-zA-Z_]\w*)\s*\(\s*([a-zA-Z_]\w*)\s*\)\s*=\s*(.+)$/,
-      );
-      if (fnMatch) {
-        const [, name, param, expr] = fnMatch;
-        ctx.functions[name] = { param, expr };
-
-        const color = PLOT_COLORS[colorIdx % PLOT_COLORS.length];
-        colorIdx++;
-
-        const plotFn = (x: number): number => {
-          try {
-            return evaluate(
-              expr,
-              { ...ctx.variables, [param]: x },
-              ctx.functions,
-            );
-          } catch {
-            return NaN;
-          }
-        };
-
+      // Stats functions
+      const statsResult = tryStatsCall(line, ctx.scope);
+      if (statsResult) {
         results.push({
-          type: "plot",
-          input: rawLine,
-          output: `${name}(${param}) defined`,
-          name,
-          plotFn,
-          color,
+          type: 'stats', input: rawLine,
+          output: `${statsResult.fn} = ${typeof statsResult.result === 'number' ? formatNumber(statsResult.result) : statsResult.result}`,
+          value: typeof statsResult.result === 'number' ? statsResult.result : undefined,
         });
         continue;
       }
 
-      // Equation with = (but not assignment to known pattern)
-      // Must contain = and have expressions on both sides
-      const eqParts = line.split("=");
+      // Function definition: f(x) = expr
+      const fnMatch = line.match(/^([a-zA-Z_]\w*)\s*\(\s*([a-zA-Z_]\w*)\s*\)\s*=\s*(.+)$/);
+      if (fnMatch) {
+        const [, name, param, expr] = fnMatch;
+        const normExpr = normalize(expr);
+        ctx.functions[name] = { param, expr: normExpr };
+
+        // Pre-compile for fast plot evaluation
+        const compiled = compileExpr(normExpr);
+        
+        ctx.scope[name] = (v: number) => evalCompiled(compiled, { ...ctx.scope, [param]: v });
+
+        const color = PLOT_COLORS[colorIdx++ % PLOT_COLORS.length];
+        const plotScope = { ...ctx.scope };
+        const plotFn = (x: number): number => {
+          plotScope[param] = x;
+          try { return compiled.evaluate(plotScope); } catch { return NaN; }
+        };
+
+        results.push({ type: 'plot', input: rawLine, output: `${name}(${param}) defined`, name, plotFn, color });
+        continue;
+      }
+
+      // Equation with =
+      const eqParts = line.split('=');
       if (eqParts.length === 2) {
         const lhs = eqParts[0].trim();
         const rhs = eqParts[1].trim();
-
-        // Skip simple variable assignment (single identifier on LHS with no operators)
-        const isSimpleAssign =
-          /^[a-zA-Z_]\w*$/.test(lhs) && !MATH_CONSTANTS[lhs];
+        const isSimpleAssign = /^[a-zA-Z_]\w*$/.test(lhs);
 
         if (!isSimpleAssign && lhs && rhs) {
-          // Try circle detection first
-          const circle = detectCircle(lhs, rhs, ctx.variables, ctx.functions);
-          if (circle) {
-            const color = PLOT_COLORS[colorIdx % PLOT_COLORS.length];
-            colorIdx++;
-            results.push({
-              type: "circle",
-              input: rawLine,
-              output: `Circle: center (${formatNumber(circle.cx)}, ${formatNumber(circle.cy)}), r = ${formatNumber(circle.r)}`,
-              circle,
-              color,
-            });
+          const knownVars = new Set(Object.keys(ctx.variables));
+          const lhsVars = freeVariables(lhs, knownVars);
+          const rhsVars = freeVariables(rhs, knownVars);
+          const allVars = new Set([...lhsVars, ...rhsVars]);
+
+          // Implicit curve: contains both x and y
+          if (allVars.has('x') && allVars.has('y')) {
+            const color = PLOT_COLORS[colorIdx++ % PLOT_COLORS.length];
+            // Pre-compile both sides for fast marching squares
+            const compiledLhs = compileExpr(lhs);
+            const compiledRhs = compileExpr(rhs);
+            const scopeSnapshot = { ...ctx.scope };
+            // Reuse a single scope object to avoid allocation in hot loop
+            const implicitScope = { ...scopeSnapshot, x: 0, y: 0 };
+            const implicitFn = (xv: number, yv: number): number => {
+              implicitScope.x = xv;
+              implicitScope.y = yv;
+              try {
+                return compiledLhs.evaluate(implicitScope) - compiledRhs.evaluate(implicitScope);
+              } catch { return NaN; }
+            };
+            results.push({ type: 'implicit', input: rawLine, output: 'Implicit curve plotted', implicitFn, color });
             continue;
           }
 
-          // Try equation solving
-          const solution = solveLinearEquation(
-            lhs,
-            rhs,
-            ctx.variables,
-            ctx.functions,
-          );
+          // Equation solving
+          const solution = solveEquation(lhs, rhs, ctx.scope, knownVars);
           if (solution) {
-            results.push({
-              type: "equation",
-              input: rawLine,
-              output: `${solution.variable} = ${formatNumber(solution.value)}`,
-              value: solution.value,
-            });
+            const { variable, values } = solution.solutions;
+            if (values.length === 0) {
+              results.push({ type: 'equation', input: rawLine, output: 'No real solution' });
+            } else {
+              results.push({ type: 'equation', input: rawLine, output: values.map(v => `${variable} = ${formatNumber(v)}`).join(', '), value: values[0] });
+            }
             continue;
           }
         }
       }
 
-      // Variable assignment: x = expr
+      // Variable assignment
       const assignMatch = line.match(/^([a-zA-Z_]\w*)\s*=\s*(.+)$/);
       if (assignMatch) {
         const [, name, expr] = assignMatch;
-        const value = evaluate(expr, ctx.variables, ctx.functions);
+        const value = safeEval(expr, ctx.scope);
         ctx.variables[name] = value;
-        results.push({
-          type: "assignment",
-          input: rawLine,
-          output: `${name} = ${formatNumber(value)}`,
-          name,
-          value,
-        });
+        ctx.scope[name] = value;
+        results.push({ type: 'assignment', input: rawLine, output: `${name} = ${formatNumber(value)}`, name, value });
         continue;
       }
 
       // Expression evaluation
-      const value = evaluate(line, ctx.variables, ctx.functions);
-      results.push({
-        type: "value",
-        input: rawLine,
-        output: formatNumber(value),
-        value,
-      });
+      const value = safeEval(line, ctx.scope);
+      results.push({ type: 'value', input: rawLine, output: formatNumber(value), value });
     } catch (err: any) {
-      results.push({
-        type: "error",
-        input: rawLine,
-        output: err.message || "Error",
-      });
+      results.push({ type: 'error', input: rawLine, output: err.message || 'Error' });
     }
   }
 
   return results;
-}
-
-function formatNumber(n: number): string {
-  if (Number.isNaN(n)) return "NaN";
-  if (!Number.isFinite(n)) return n > 0 ? "∞" : "-∞";
-  if (Number.isInteger(n)) return n.toString();
-  return parseFloat(n.toFixed(8)).toString();
-}
-
-// ─── Build plot function from context ────────────────────────────────────
-
-export function createPlotFunction(
-  expr: string,
-  param: string,
-  variables: Record<string, number>,
-  functions: Record<string, { param: string; expr: string }>,
-): (x: number) => number {
-  return (x: number) => {
-    try {
-      return evaluate(expr, { ...variables, [param]: x }, functions);
-    } catch {
-      return NaN;
-    }
-  };
 }

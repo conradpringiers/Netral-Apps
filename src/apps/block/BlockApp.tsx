@@ -3,11 +3,12 @@
  */
 
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { Editor, getEditorMethods } from '@/components/Editor';
+import { Editor, EditorMethods } from '@/components/Editor';
 import { NetralRenderer } from '@/core/renderer/NetralRenderer';
 import { HelpModal } from '@/shared/components/HelpModal';
 import { FileMenu } from '@/shared/components/FileMenu';
 import { TemplatesModal } from '@/shared/components/TemplatesModal';
+import { ToolsMenu } from '@/shared/components/ToolsMenu';
 import { ThemeSelector } from '@/shared/components/ThemeSelector';
 import { ShareButton } from '@/shared/components/ShareButton';
 import { getCharCount } from '@/core/renderer/markdownRenderer';
@@ -45,7 +46,7 @@ Bigtitle[Everything you need]
 
 Feature[
 {🚀;Fast;Create pages in minutes with our intuitive syntax}
-{🎨;Themes;9 professional themes ready to use}
+{🎨;Themes;11 professional themes ready to use}
 {📱;Responsive;All pages automatically adapt to mobile}
 ]
 
@@ -109,6 +110,7 @@ export function BlockApp({ initialContent, onBack }: BlockAppProps) {
   const [content, setContent] = useState(initialContent || DEFAULT_CONTENT);
   const [viewMode, setViewMode] = useState<'split' | 'editor' | 'preview'>('split');
   const editorContainerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<EditorMethods>(null);
   const isMobile = useIsMobile();
 
   const charCount = getCharCount(content);
@@ -143,8 +145,11 @@ export function BlockApp({ initialContent, onBack }: BlockAppProps) {
   }, [content]);
 
   const handleWrap = useCallback((prefix: string, suffix: string) => {
-    const methods = getEditorMethods(editorContainerRef);
-    if (methods) methods.wrapSelection(prefix, suffix);
+    editorRef.current?.wrapSelection(prefix, suffix);
+  }, []);
+
+  const handleInsert = useCallback((text: string) => {
+    editorRef.current?.insertAtCursor(text);
   }, []);
 
   const handleExport = () => {
@@ -182,6 +187,7 @@ export function BlockApp({ initialContent, onBack }: BlockAppProps) {
           </span>
           <FileMenu documentTitle={documentTitle} content={content} onLoad={handleLoadFile} fileExtension=".netblock" />
           <TemplatesModal mode="block" onSelect={handleLoadFile} />
+          <ToolsMenu onInsert={handleInsert} />
           <ThemeSelector currentTheme={currentTheme} onThemeChange={handleThemeChange} />
         </div>
 
@@ -231,7 +237,7 @@ export function BlockApp({ initialContent, onBack }: BlockAppProps) {
           <ResizablePanelGroup direction="horizontal" className="h-full">
             <ResizablePanel defaultSize={50} minSize={30}>
               <div className="relative h-full border-r border-border" ref={editorContainerRef}>
-                <Editor value={content} onChange={setContent} mode="block" />
+                <Editor ref={editorRef} value={content} onChange={setContent} mode="block" />
               </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
@@ -243,7 +249,7 @@ export function BlockApp({ initialContent, onBack }: BlockAppProps) {
           </ResizablePanelGroup>
         ) : viewMode === 'editor' ? (
           <div className="relative h-full" ref={editorContainerRef}>
-            <Editor value={content} onChange={setContent} mode="block" />
+            <Editor ref={editorRef} value={content} onChange={setContent} mode="block" />
           </div>
         ) : (
           <div className="h-full overflow-auto">

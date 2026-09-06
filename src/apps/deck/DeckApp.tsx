@@ -4,12 +4,13 @@
  */
 
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { Editor, getEditorMethods } from '@/components/Editor';
+import { Editor, EditorMethods } from '@/components/Editor';
 import { DeckPreview } from '@/core/renderer/DeckPreview';
 import { PresentationMode } from '@/core/renderer/PresentationMode';
 import { HelpModal } from '@/shared/components/HelpModal';
 import { FileMenu } from '@/shared/components/FileMenu';
 import { TemplatesModal } from '@/shared/components/TemplatesModal';
+import { ToolsMenu } from '@/shared/components/ToolsMenu';
 import { ThemeSelector } from '@/shared/components/ThemeSelector';
 import { ShareButton } from '@/shared/components/ShareButton';
 import { getCharCount } from '@/core/renderer/markdownRenderer';
@@ -47,6 +48,7 @@ export function DeckApp({ initialContent, onBack }: DeckAppProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [launchMode, setLaunchMode] = useState<'none' | 'present' | 'presenter'>('none');
   const editorContainerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<EditorMethods>(null);
   const channelRef = useRef<BroadcastChannel | null>(null);
   const popupRef = useRef<Window | null>(null);
   const isMobile = useIsMobile();
@@ -82,13 +84,11 @@ export function DeckApp({ initialContent, onBack }: DeckAppProps) {
   }, [content]);
 
   const handleInsert = useCallback((text: string) => {
-    const methods = getEditorMethods(editorContainerRef);
-    if (methods) methods.insertAtCursor(text);
+    editorRef.current?.insertAtCursor(text);
   }, []);
 
   const handleWrap = useCallback((prefix: string, suffix: string) => {
-    const methods = getEditorMethods(editorContainerRef);
-    if (methods) methods.wrapSelection(prefix, suffix);
+    editorRef.current?.wrapSelection(prefix, suffix);
   }, []);
 
   // Presenter mode: BroadcastChannel sync
@@ -199,6 +199,7 @@ export function DeckApp({ initialContent, onBack }: DeckAppProps) {
           </span>
           <FileMenu documentTitle={documentTitle} content={content} onLoad={handleLoad} fileExtension=".netdeck" />
           <TemplatesModal mode="deck" onSelect={handleLoad} />
+          <ToolsMenu onInsert={handleInsert} />
           <ThemeSelector currentTheme={currentTheme} onThemeChange={handleThemeChange} />
         </div>
 
@@ -274,7 +275,7 @@ export function DeckApp({ initialContent, onBack }: DeckAppProps) {
           <ResizablePanelGroup direction="horizontal" className="h-full">
             <ResizablePanel defaultSize={50} minSize={30}>
               <div className="relative h-full border-r border-border" ref={editorContainerRef}>
-                <Editor value={content} onChange={setContent} mode="deck" />
+                <Editor ref={editorRef} value={content} onChange={setContent} mode="deck" />
               </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
@@ -284,7 +285,7 @@ export function DeckApp({ initialContent, onBack }: DeckAppProps) {
           </ResizablePanelGroup>
         ) : viewMode === 'editor' ? (
           <div className="relative h-full" ref={editorContainerRef}>
-            <Editor value={content} onChange={setContent} mode="deck" />
+            <Editor ref={editorRef} value={content} onChange={setContent} mode="deck" />
           </div>
         ) : (
           <DeckPreview content={content} />

@@ -3,7 +3,7 @@
  */
 
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { Editor, getEditorMethods } from '@/components/Editor';
+import { Editor, EditorMethods } from '@/components/Editor';
 import { DocRenderer } from '@/core/renderer/DocRenderer';
 import { HelpModal } from '@/shared/components/HelpModal';
 import { TemplatesModal } from '@/shared/components/TemplatesModal';
@@ -45,6 +45,7 @@ export function DocApp({ initialContent, onBack }: DocAppProps) {
   const [viewMode, setViewMode] = useState<'split' | 'editor' | 'preview'>('split');
   const [exportOpen, setExportOpen] = useState(false);
   const editorContainerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<EditorMethods>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -74,8 +75,7 @@ export function DocApp({ initialContent, onBack }: DocAppProps) {
   }, []);
 
   const handleWrap = useCallback((prefix: string, suffix: string) => {
-    const methods = getEditorMethods(editorContainerRef);
-    if (methods) methods.wrapSelection(prefix, suffix);
+    editorRef.current?.wrapSelection(prefix, suffix);
   }, []);
 
   const handleExportPDF = async () => {
@@ -214,7 +214,7 @@ export function DocApp({ initialContent, onBack }: DocAppProps) {
           <ResizablePanelGroup direction="horizontal" className="h-full">
             <ResizablePanel defaultSize={50} minSize={30}>
               <div className="relative h-full border-r border-border" ref={editorContainerRef}>
-                <Editor value={content} onChange={setContent} mode="doc" />
+                <Editor ref={editorRef} value={content} onChange={setContent} mode="doc" />
               </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
@@ -226,7 +226,7 @@ export function DocApp({ initialContent, onBack }: DocAppProps) {
           </ResizablePanelGroup>
         ) : viewMode === 'editor' ? (
           <div className="relative h-full" ref={editorContainerRef}>
-            <Editor value={content} onChange={setContent} mode="doc" />
+            <Editor ref={editorRef} value={content} onChange={setContent} mode="doc" />
           </div>
         ) : (
           <div ref={previewRef} className="h-full overflow-auto bg-white">
