@@ -11,7 +11,7 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { syntaxHighlighting, defaultHighlightStyle, bracketMatching } from '@codemirror/language';
 import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap, CompletionContext, Completion } from '@codemirror/autocomplete';
 
-export type EditorMode = 'block' | 'deck' | 'doc';
+export type EditorMode = 'block' | 'deck' | 'doc' | 'luate' | 'calus';
 
 interface EditorProps {
   value: string;
@@ -40,7 +40,7 @@ const blockSnippets: Record<string, string> = {
 {Basic;$9/mo;Feature 1, Feature 2, Feature 3}
 {Pro;$29/mo;Everything in Basic, Priority support}
 ]`,
-  'Image': `Image[https://example.com/image.jpg]`,
+  'Image': `Image[https://picsum.photos/800/400?random={{random}}]`,
   'Video': `Video[https://example.com/video.mp4]`,
   'Embed': `Embed[https://example.com]`,
   'Warn': `Warn[Warning message here]`,
@@ -65,9 +65,9 @@ const blockSnippets: Record<string, string> = {
 ]`,
   'Divider': `Divider[wave]`,
   'Gallery': `Gallery[
-{https://picsum.photos/400/300?1;Image 1}
-{https://picsum.photos/400/300?2;Image 2}
-{https://picsum.photos/400/300?3;Image 3}
+{https://picsum.photos/400/300?random={{random}};Image 1}
+{https://picsum.photos/400/300?random={{random}};Image 2}
+{https://picsum.photos/400/300?random={{random}};Image 3}
 ]`,
   'Timeline': `Timeline[
 {2024;Step 1;Description of the step}
@@ -99,6 +99,18 @@ Experience crystal-clear audio with our flagship model
 {Connectivity;Bluetooth 5.0}
 ]`,
   'AnimateOnScroll': `AnimateOnScroll[]`,
+  'Title': `--- My Site`,
+  'Theme': `Theme[Modern]`,
+  'Logo': `Logo[My Brand]`,
+  'Section': `-- Section Title`,
+  'Countdown': `Countdown[Product Launch;2025-12-31;Don't miss it!]`,
+  'Meta': `Meta[Site Title;Site description for search engines;https://example.com/og-image.jpg]`,
+  'Form': `Form[
+{mailto:contact@example.com;POST;Send Message}
+{text;name;Your Name;Enter your name}
+{email;email;Your Email;you@example.com}
+{textarea;message;Your Message;Write your message here}
+]`,
 };
 
 // Deck mode snippets (presentations)
@@ -124,7 +136,7 @@ Right content
 {50K;Value}
 {99%;Score}
 ]`,
-  'Image': `Image[https://example.com/image.jpg]`,
+  'Image': `Image[https://picsum.photos/800/400?random={{random}}]`,
   'Warn': `Warn[Warning message]`,
   'Def': `Def[Important information]`,
   'quote': `quote[Your quote here]`,
@@ -147,9 +159,9 @@ function hello() {
 ]`,
   'Badge': `Badge[New]`,
   'Gallery': `Gallery[
-{https://picsum.photos/400/300?1;Image 1}
-{https://picsum.photos/400/300?2;Image 2}
-{https://picsum.photos/400/300?3;Image 3}
+{https://picsum.photos/400/300?random={{random}};Image 1}
+{https://picsum.photos/400/300?random={{random}};Image 2}
+{https://picsum.photos/400/300?random={{random}};Image 3}
 ]`,
   'Progress': `Progress[75;Progress]`,
   'Graph': `Graph[
@@ -169,6 +181,10 @@ function hello() {
 ]`,
   'Background': `Background[https://images.unsplash.com/photo-1557683316-973673baf926?w=1920]`,
   'Speaker': `Speaker[Simplicity is the ultimate sophistication;Leonardo da Vinci;Artist & Inventor;https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Leonardo_da_Vinci%2C_Head_of_a_Woman.jpg/440px-Leonardo_da_Vinci%2C_Head_of_a_Woman.jpg]`,
+  'Title': `--- My Presentation`,
+  'Theme': `Theme[Modern]`,
+  'Logo': `Logo[My Brand]`,
+  'Notes': `Notes[Private speaker notes for this slide]`,
 };
 
 // Doc mode snippets (documents)
@@ -214,16 +230,42 @@ const docSnippets: Record<string, string> = {
 [^1]: Footnote content`,
   'abbr': `*[HTML]: HyperText Markup Language`,
   'toc': `[[toc]]`,
-  'Callout': `Callout[info;This is important information to remember.]`,
-  'Calloutw': `Callout[warning;Warning: this action is irreversible!]`,
-  'Callouts': `Callout[success;Operation completed successfully!]`,
-  'Calloute': `Callout[error;An error occurred during processing.]`,
+  'Info callout': `Callout[info;This is important information to remember.]`,
+  'Warning callout': `Callout[warning;Warning: this action is irreversible!]`,
+  'Success callout': `Callout[success;Operation completed successfully!]`,
+  'Error callout': `Callout[error;An error occurred during processing.]`,
 };
+
+// Luate mode snippets (exams & quizzes)
+const luateSnippets: Record<string, string> = {
+  'Title': `--- Exam Title`,
+  'Theme': `Theme[Modern]`,
+  'Subtitle': `Subtitle[Grade 10]`,
+  'Duration': `Duration[90 minutes]`,
+  'Instructions': `Instructions[Answer all questions. Show your working where required.]`,
+  'Section': `-- Part 1: Section Title`,
+  'MCQ': `MCQ[2;Question?;{Option A;Option B;Option C;Option D};Option A]`,
+  'Checkbox': `Checkbox[3;Select all that apply;{Option A;Option B;Option C};Option A,Option C]`,
+  'Short': `Short[1;Question?;Answer]`,
+  'Short batch': `Short[4;Answer each briefly;{Question 1?;Answer 1}{Question 2?;Answer 2}]`,
+  'TrueFalse': `TrueFalse[1;Statement;true]`,
+  'TrueFalse batch': `TrueFalse[3;Evaluate each statement;{Statement 1;true}{Statement 2;false}]`,
+  'FillBlank': `FillBlank[2;The capital of France is ___;Paris]`,
+  'FillBlank batch': `FillBlank[4;Complete each sentence;{The capital of France is ___;Paris}{Water freezes at ___ °C;0}]`,
+  'Open': `Open[5;Explain your reasoning]`,
+  'Open lines': `Open[5;Question?;10;Model answer]`,
+  'Canvas': `Canvas[0;Draw your answer;250]`,
+};
+
+// Calus mode snippets (math calculator) — no Netral elements, only comments
+const calusSnippets: Record<string, string> = {};
 
 // Get snippets based on mode
 function getSnippetsForMode(mode: EditorMode): Record<string, string> {
   if (mode === 'deck') return deckSnippets;
   if (mode === 'doc') return docSnippets;
+  if (mode === 'luate') return luateSnippets;
+  if (mode === 'calus') return calusSnippets;
   return blockSnippets;
 }
 
@@ -234,11 +276,24 @@ function createNetralCompletions(mode: EditorMode) {
     if (!word || (word.from === word.to && !context.explicit)) return null;
 
     const snippets = getSnippetsForMode(mode);
+    const detailMap: Record<EditorMode, string> = {
+      block: 'Block element',
+      deck: 'Slide element',
+      doc: 'Doc element',
+      luate: 'Exam element',
+      calus: 'Math',
+    };
     const completions: Completion[] = Object.entries(snippets).map(([label, snippet]) => ({
       label,
       type: 'keyword',
-      apply: snippet,
-      detail: mode === 'deck' ? 'Slide element' : 'Netral element',
+      apply: (view: EditorView, _completion: Completion, from: number, to: number) => {
+        const text = snippet.replace(/\{\{random\}\}/g, () => String(Math.floor(Math.random() * 1000000)));
+        view.dispatch({
+          changes: { from, to, insert: text },
+          selection: { anchor: from + text.length },
+        });
+      },
+      detail: detailMap[mode] || 'Netral element',
     }));
 
     return {

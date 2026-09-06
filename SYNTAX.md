@@ -1,29 +1,33 @@
-# Netral Syntax Reference
+# Netral — Syntax Reference
 
-Complete syntax documentation for all Netral tools. Each tool uses a Markdown-inspired syntax extended with custom directives.
+Complete syntax documentation for every Netral tool. Each tool uses a Markdown-inspired syntax extended with custom directives of the form `Name[...]`.
 
 ---
 
 ## Table of Contents
 
 - [Shared Syntax](#shared-syntax)
-- [Netral Block](#netral-block)
-- [Netral Deck](#netral-deck)
-- [Netral Doc](#netral-doc)
+- [Netral Block](#netral-block) — websites
+- [Netral Deck](#netral-deck) — presentations
+- [Netral Doc](#netral-doc) — documents
+- [Netral Calus](#netral-calus) — math & graphs
+- [Netral Luate](#netral-luate) — exams & quizzes
+- [File Extensions](#file-extensions)
+- [Sharing](#sharing)
 
 ---
 
 ## Shared Syntax
 
-These directives work across all Netral tools.
+These directives work across Block, Deck, Doc and Luate.
 
-### Document Title
+### Document title
 
 ```
 --- My Document Title
 ```
 
-Sets the document/site/presentation title. Must be the first line.
+Sets the document / site / presentation / exam title. Conventionally placed on the first line.
 
 ### Theme
 
@@ -31,9 +35,11 @@ Sets the document/site/presentation title. Must be the first line.
 Theme[Modern]
 ```
 
-Available themes: `Modern`, `Natural`, `Latte`, `Dark Mode`, `Terminal`, `Ocean`, `Solarized`, `Midnight`, `Minimal`, `Sunset`, `Neon`
+Available themes:
 
-### Inline Formatting
+`Modern` · `Natural` · `Latte` · `Dark Mode` · `Terminal` · `Ocean` · `Solarized` · `Midnight` · `Minimal` · `Sunset` · `Neon`
+
+### Inline formatting
 
 | Syntax | Result |
 |--------|--------|
@@ -61,315 +67,89 @@ Available themes: `Modern`, `Natural`, `Latte`, `Dark Mode`, `Terminal`, `Ocean`
 
 ## Netral Block
 
-Netral Block creates full websites with sections, navigation, and interactive components.
+Netral Block creates full websites with sections, navigation and interactive components.
 
-### Document Setup
+### Document setup
 
-#### Logo
+| Directive | Example | Description |
+|-----------|---------|-------------|
+| Title | `--- My Site` | Site title (first line) |
+| Theme | `Theme[Modern]` | One of the 11 themes |
+| Logo | `Logo[My Brand]` or `Logo[https://.../logo.png]` | Navbar logo (text or image URL) |
+| Navbar | `Navbar[{Home;#home}{Pricing;#pricing}]` | Navigation items, `{Label;URL}` |
+| Header | `Header[Type;Title;Description;ImageURL;Link]` | Hero section |
+| Section | `-- Section Title` | Starts a new content section |
+| Meta | `Meta[Title;Description;Image]` | SEO / Open Graph tags |
+| AnimateOnScroll | `AnimateOnScroll[]` | Fade-in animations on scroll |
 
-```
-Logo[My Brand]
-Logo[https://example.com/logo.png]
-```
+#### Header types
 
-Text or image URL for the site logo displayed in the navbar.
+- `Classic` — centered hero
+- `BigText` — large typography hero
+- `SplitImage` — text on one side, image on the other
 
-#### Navbar
-
-```
-Navbar[
-{Home;#home}
-{Features;#features}
-{Pricing;#pricing}
-{Contact;#contact}
-]
-```
-
-Navigation bar with `{Label;URL}` items.
-
-#### Header
-
-```
-Header[Type;Title;Description;ImageURL;Link]
-```
-
-Hero section at the top of the page. Types:
-- `Classic` — Standard centered hero
-- `BigText` — Large typography hero
-- `SplitImage` — Text on one side, image on the other
-
-Example:
 ```
 Header[BigText;Welcome to Netral;Build beautiful sites with simple syntax;https://picsum.photos/1200/600;#features]
 ```
 
-#### Sections
+### Media & content
 
-```
--- Section Title
-```
-
-Creates a new content section. Content below belongs to this section until the next `--`.
-
-#### Scroll Animations
-
-```
-AnimateOnScroll[]
-```
-
-Enables fade-in animations on scroll for all elements.
-
-### Content Elements
-
-#### Image
-
-```
-Image[https://picsum.photos/800/400]
-```
-
-Full-width responsive image.
-
-#### Video
-
-```
-Video[https://youtube.com/watch?v=...]
-```
-
-Embedded video player (YouTube, Vimeo, etc.).
-
-#### Embed
-
-```
-Embed[https://example.com]
-```
-
-Embeds an external website via iframe.
-
-#### Bigtitle
-
-```
-Bigtitle[Large Centered Title]
-```
-
-Prominent centered title text.
-
-#### Column
-
-```
-Column[
-{Left column content goes here. Supports **markdown**.}
-{Right column content goes here.}
-]
-```
-
-Two-column layout. Each `{...}` is a column.
-
-#### Gallery
-
-```
-Gallery[
-{https://picsum.photos/400/300;First image caption}
-{https://picsum.photos/400/300;Second image caption}
-]
-```
-
-Image gallery grid with optional captions.
+| Directive | Example | Description |
+|-----------|---------|-------------|
+| Image | `Image[https://.../image.jpg]` | Full-width responsive image |
+| Video | `Video[https://youtube.com/watch?v=...]` | Embedded video player |
+| Embed | `Embed[https://example.com]` | Embed a website via iframe |
+| Gallery | `Gallery[{url;caption}{url;caption}]` | Image gallery grid |
+| Bigtitle | `Bigtitle[Large Centered Title]` | Prominent centered title |
+| Column | `Column[{Left content}{Right content}]` | Two-column layout |
 
 ### Components
 
-#### Feature
+| Directive | Example | Description |
+|-----------|---------|-------------|
+| Feature | `Feature[{🚀;Title;Description}]` | Feature cards (emoji, title, text) |
+| Element | `Element[{Title;Description;ImageURL}]` | Cards with image, title, text |
+| Testimonial | `Testimonial[{Name;Role;Quote;PhotoURL}]` | Customer testimonials |
+| Pricing | `Pricing[{Plan;$9/mo;Feature 1, Feature 2}]` | Pricing cards (benefits comma-separated) |
+| Stats | `Stats[{100+;Label}]` | Statistics display |
+| Team | `Team[{Name;Role;PhotoURL;Bio}]` | Team member profiles |
+| Steps | `Steps[{1;Title;Description}]` | Numbered process steps |
+| Metric | `Metric[{📈;Value;Label;+15%}]` | KPI cards with change indicator |
+| Showcase | `Showcase[Image;Title;Subtitle;{Spec;Value}{Spec;Value}]` | Product showcase |
+
+### Interactive
+
+| Directive | Example | Description |
+|-----------|---------|-------------|
+| FAQ | `FAQ[{Question?;Answer}]` | Expandable FAQ accordion |
+| CTA | `CTA[Title;Description;Button;URL]` | Call-to-action block |
+| Timeline | `Timeline[{2024;Event;Description}]` | Chronological timeline |
+| Countdown | `Countdown[Label;2025-12-31;Description]` | Event countdown |
+| Badge | `Badge[New Feature]` | Colored tag/badge |
+| Progress | `Progress[75;Label]` | Progress bar (0–100) |
+| Form | `Form[{action;method;submit}{type;name;label;placeholder}]` | Contact form |
+
+#### Form example
 
 ```
-Feature[
-{🚀;Fast;Lightning-quick performance}
-{🎨;Beautiful;Stunning visual design}
-{📱;Responsive;Works on every device}
+Form[
+{mailto:contact@example.com;POST;Send Message}
+{text;name;Your Name;Enter your name}
+{email;email;Your Email;you@example.com}
+{textarea;message;Your Message;Write your message here}
 ]
 ```
 
-Feature cards with emoji icon, title, and description.
+Field types: `text`, `email`, `textarea`, `select`. The first `{...}` is optional config (`action;method;submitText`).
 
-#### Element
+### Callouts & decorative
 
-```
-Element[
-{Card Title;Card description text;https://picsum.photos/300/200}
-]
-```
-
-Cards with image, title, and description.
-
-#### Stats
-
-```
-Stats[
-{100+;Users}
-{50K;Downloads}
-{99%;Uptime}
-]
-```
-
-Statistics counter display.
-
-#### Testimonial
-
-```
-Testimonial[
-{Jane Doe;CEO at TechCorp;This product changed our workflow;https://i.pravatar.cc/100?img=1}
-{John Smith;Designer;Incredibly intuitive interface;https://i.pravatar.cc/100?img=2}
-]
-```
-
-Customer testimonials with name, role, quote, and photo.
-
-#### Pricing
-
-```
-Pricing[
-{Free;$0/mo;1 project, Community support, Basic features}
-{Pro;$19/mo;Unlimited projects, Priority support, Advanced features}
-{Enterprise;$99/mo;Custom solutions, Dedicated support, API access}
-]
-```
-
-Pricing cards. Benefits are comma-separated within the third field.
-
-#### Team
-
-```
-Team[
-{Alice Martin;Lead Developer;https://i.pravatar.cc/100?img=5;Full-stack engineer with 10 years of experience}
-]
-```
-
-Team member profiles with name, role, photo, and bio.
-
-#### Steps
-
-```
-Steps[
-{1;Sign Up;Create your free account in seconds}
-{2;Build;Use our intuitive editor to create your content}
-{3;Launch;Publish and share with the world}
-]
-```
-
-Numbered step-by-step process.
-
-#### Metric
-
-```
-Metric[
-{📈;$1.2M;Revenue;+15%}
-{👥;12.5K;Users;+8%}
-{⭐;4.9;Rating;+0.2}
-]
-```
-
-KPI metric cards with icon, value, label, and change indicator.
-
-#### Showcase
-
-```
-Showcase[
-https://picsum.photos/600/400
-Product Name
-The best product ever made
-{Weight;1.2 kg}
-{Battery;24 hours}
-{Display;6.7 inches}
-]
-```
-
-Product showcase with image, title, subtitle, and specification pairs.
-
-#### Timeline
-
-```
-Timeline[
-{2024;Product Launch;Released v1.0 to the public}
-{2025;Major Update;Added 50+ new features}
-]
-```
-
-Chronological timeline of events.
-
-#### FAQ
-
-```
-FAQ[
-{What is Netral?;Netral is a simple syntax for building websites without coding.}
-{Is it free?;Yes, Netral is completely free and open source.}
-]
-```
-
-Expandable FAQ accordion.
-
-#### CTA (Call to Action)
-
-```
-CTA[Ready to start?;Join thousands of creators;Get Started;#signup]
-```
-
-Call-to-action block with title, description, button text, and button URL.
-
-#### Countdown
-
-```
-Countdown[Product Launch;2025-12-31;Don't miss it!]
-```
-
-Countdown timer with label, target date, and description.
-
-### Callouts & Decorative
-
-#### Warn
-
-```
-Warn[This feature is experimental and may change.]
-```
-
-Warning callout block.
-
-#### Def
-
-```
-Def[Netral uses a Markdown-inspired syntax extended for the web.]
-```
-
-Info/definition callout block.
-
-#### Quote
-
-```
-quote[Simplicity is the ultimate sophistication. - Leonardo da Vinci]
-```
-
-Styled blockquote.
-
-#### Badge
-
-```
-Badge[New Feature]
-```
-
-Colored tag/badge element.
-
-#### Progress
-
-```
-Progress[75;Project Completion]
-```
-
-Progress bar with percentage value (0–100) and label.
-
-#### Divider
-
-```
-Divider[wave]
-```
-
-Visual section divider. Styles: `wave`, `dots`, `line`, etc.
+| Directive | Example | Description |
+|-----------|---------|-------------|
+| Warn | `Warn[Message]` | Warning callout |
+| Def | `Def[Message]` | Info / definition callout |
+| quote | `quote[Text]` | Styled blockquote |
+| Divider | `Divider[wave]` | Visual divider (`wave`, `dots`, `line`) |
 
 ---
 
@@ -377,127 +157,53 @@ Visual section divider. Styles: `wave`, `dots`, `line`, etc.
 
 Netral Deck creates presentation slides with fullscreen and presenter modes.
 
-### Slide Structure
+### Slide structure
 
-#### New Slide
+| Directive | Example | Description |
+|-----------|---------|-------------|
+| Title | `--- My Presentation` | Presentation title |
+| Theme | `Theme[Modern]` | One of the 11 themes |
+| New slide | `-- Slide Title` | Starts a new slide |
+| Logo | `Logo[Text or URL]` | Logo shown on every slide |
+| Background | `Background[https://.../image.jpg]` | Slide background image |
+| Notes | `Notes[Private notes for this slide]` | Speaker notes (presenter mode) |
 
-```
--- Slide Title
-```
+### Slide content
 
-Creates a new slide. Everything below belongs to this slide until the next `--`.
+| Directive | Example | Description |
+|-----------|---------|-------------|
+| Bigtitle | `Bigtitle[Main Title]` | Large slide title |
+| Image | `Image[url]` | Display an image |
+| Video | `Video[url]` | Embed a video |
+| Code | `Code[javascript; ... ]` | Syntax-highlighted code block |
+| Column | `Column[{Left}{Right}]` | Two-column layout (supports nested blocks) |
+| List | `List[{✅;Item}{❌;Item}]` | Icon list |
+| Feature | `Feature[{🚀;Title;Description}]` | Feature cards |
+| Stats | `Stats[{100+;Label}]` | Statistics |
+| Timeline | `Timeline[{2024;Event;Description}]` | Timeline events |
+| Gallery | `Gallery[{url;caption}]` | Image grid |
+| Progress | `Progress[75;Label]` | Progress bar |
+| Graph | `Graph[{a;Start;->b}{b;End;}]` | Flowchart |
+| Comparison | `Comparison[{Before;❌}{After;✅}]` | Side-by-side columns |
+| Agenda | `Agenda[{1;Topic;5 min}]` | Meeting agenda |
+| Speaker | `Speaker[Quote;Name;Role;PhotoURL]` | Quote with speaker photo |
 
-#### Logo
+### Callouts
 
-```
-Logo[My Company]
-Logo[https://example.com/logo.png]
-```
+`Warn[Message]` · `Def[Message]` · `quote[Text]` · `Badge[Text]`
 
-Displayed on every slide.
-
-#### Background
-
-```
-Background[https://picsum.photos/1920/1080]
-```
-
-Per-slide background image. Place inside a slide.
-
-#### Speaker Notes
-
-```
-Notes[These are private notes only visible in presenter mode.]
-```
-
-Private notes shown only in presenter mode (popup window).
-
-### Slide Content
-
-All shared content elements work (Image, Video, Bigtitle, Column, Feature, Stats, Warn, Def, quote, Badge, Progress, Timeline, Gallery).
-
-#### Code Block
-
-```
-Code[javascript;
-const hello = "world";
-console.log(hello);
-]
-```
-
-Syntax-highlighted code block with language identifier.
-
-#### List
-
-```
-List[
-{✅;Task completed}
-{❌;Task failed}
-{⏳;Task pending}
-]
-```
-
-Icon list with emoji and text.
-
-#### Graph (Flowchart)
-
-```
-Graph[
-{a;Start;->b}
-{b;Process;->c}
-{c;End;}
-]
-```
-
-Visual flowchart with nodes and directed edges.
-
-#### Comparison
-
-```
-Comparison[
-{Before;❌ Slow, ❌ Complex, ❌ Expensive}
-{After;✅ Fast, ✅ Simple, ✅ Free}
-]
-```
-
-Side-by-side comparison columns.
-
-#### Agenda
-
-```
-Agenda[
-{1;Introduction;5 min}
-{2;Main Topic;20 min}
-{3;Q&A;10 min}
-]
-```
-
-Meeting agenda with numbered items, topics, and durations.
-
-#### Speaker Quote
-
-```
-Speaker[Innovation distinguishes between a leader and a follower.;Steve Jobs;CEO, Apple;https://i.pravatar.cc/200]
-```
-
-Quote block with speaker photo, name, and role.
-
-### Presentation Controls
+### Presentation controls
 
 | Key | Action |
 |-----|--------|
 | `→` / `Space` | Next slide |
 | `←` | Previous slide |
-| `Escape` | Exit fullscreen |
 | `F` | Toggle fullscreen |
+| `Escape` | Exit fullscreen |
 
-### Presenter Mode
+### Presenter mode
 
-Launch with the dropdown next to "Present". Opens a popup window showing:
-- Current slide preview
-- Next slide preview
-- Speaker notes
-- Slide counter and timer
+Launch from the dropdown next to "Present". Opens a popup with current slide, next slide, speaker notes, slide counter and timer.
 
 ---
 
@@ -505,31 +211,20 @@ Launch with the dropdown next to "Present". Opens a popup window showing:
 
 Netral Doc creates professional documents optimized for PDF export via the browser print dialog.
 
-### Document Structure
+### Document structure
 
-#### Main Section
+| Directive | Example | Description |
+|-----------|---------|-------------|
+| Title | `--- My Document` | Document title |
+| Theme | `Theme[Modern]` | One of the 11 themes |
+| Section | `--- Section Title` | Top-level section (level 1) |
+| Subsection | `-- Subsection Title` | Subsection (level 2) |
 
-```
---- Section Title
-```
+### Content (standard Markdown)
 
-Creates a top-level section (level 1).
-
-#### Subsection
-
-```
--- Subsection Title
-```
-
-Creates a subsection (level 2).
-
-### Content
-
-Netral Doc supports standard Markdown:
-
-- Headings (`#`, `##`, `###`)
+- Headings (`#`, `##`, `###`, …)
 - Bold, italic, strikethrough, inline code
-- Bullet lists, numbered lists, task lists
+- Bullet, numbered and task lists
 - Links and images (`![alt](url)`)
 - Blockquotes (`> quote`)
 - Code blocks (triple backticks)
@@ -545,11 +240,155 @@ Callout[success;Operation completed successfully!]
 Callout[error;An error occurred during processing.]
 ```
 
-Styled callout blocks with four types: `info` (blue), `warning` (yellow), `success` (green), `error` (red).
+Types: `info` (blue), `warning` (yellow), `success` (green), `error` (red).
 
-### PDF Export
+### Advanced
 
-Use the **Export** button or `Ctrl+P` / `Cmd+P` to open the browser print dialog. The document is formatted with A4-style layout optimized for print output.
+- Footnotes: `Text[^1]` + `[^1]: explanation`
+- Table of contents is auto-generated when there are 3+ sections
+
+### PDF export
+
+Use the **Export** button or `Ctrl+P` / `Cmd+P` to open the print dialog. The document uses an A4 layout optimized for print.
+
+---
+
+## Netral Calus
+
+Netral Calus is an interactive math calculator, equation solver and function plotter.
+
+### Arithmetic
+
+`2 + 3` · `10 - 4` · `3 * 4` · `10 / 3` · `2^8` · `10 % 3`
+
+### Variables
+
+```
+a = 5
+b = 3
+a^2 + b^2
+```
+
+### Functions (auto-plotted)
+
+```
+f(x) = x^2 - 4
+g(x) = sin(x) * 3
+f(3)
+```
+
+### Built-in functions
+
+`sqrt(144)` · `sin(pi / 2)` · `cos(0)` · `tan(x)` · `log(100)` · `ln(e)` · `abs(-5)` · `floor(3.7)` · `ceil(3.2)`
+
+### Constants
+
+`pi` (3.14159…) · `e` (2.71828…)
+
+### Equations
+
+```
+2x + 5 = 15        → solves for x
+x^2 - 5x + 6 = 0   → solves quadratic
+x^2 + y^2 = 9      → plots implicit curves
+```
+
+### Statistics
+
+`mean(1, 2, 3, 4)` · `median(1, 3, 5, 7)` · `std(1, 2, 3, 4)` · `sum(1, 2, 3)`
+
+### Comments
+
+Lines starting with `#` are ignored.
+
+---
+
+## Netral Luate
+
+Netral Luate creates exams and quizzes. Questions are grouped into sections and carry point values.
+
+### Document setup
+
+| Directive | Example | Description |
+|-----------|---------|-------------|
+| Title | `--- Mathematics Final Exam` | Exam title |
+| Theme | `Theme[Modern]` | One of the 11 themes |
+| Subtitle | `Subtitle[Grade 10 — Semester 2]` | Subtitle under title |
+| Duration | `Duration[90 minutes]` | Time allowed |
+| Instructions | `Instructions[Answer all questions.]` | Exam instructions |
+| Section | `-- Part 1: Algebra` | Starts a new section |
+
+### Question types
+
+#### MCQ — multiple choice (single answer)
+
+```
+MCQ[2;What is 2 + 2?;{3;4;5;6};4]
+```
+
+Format: `MCQ[points;question;{options};answer]`. The trailing `answer` is optional.
+
+#### Checkbox — multiple answers
+
+```
+Checkbox[3;Select all prime numbers;{2;4;7;9};2,7]
+```
+
+Format: `Checkbox[points;question;{options};answers]` (comma-separated answers, optional).
+
+#### Open — open-ended
+
+```
+Open[5;Explain your reasoning]
+Open[5;Question?;10;Model answer]
+```
+
+Format: `Open[points;question]` or `Open[points;question;lines;answer]`.
+
+#### Canvas — drawing area
+
+```
+Canvas[0;Draw the graph of f(x);250]
+```
+
+Format: `Canvas[points;label;height]` (height in pixels).
+
+#### Short / TrueFalse / FillBlank
+
+Single-item form:
+
+```
+Short[1;What is 2+2?;4]
+TrueFalse[1;The Earth is round;true]
+FillBlank[2;The capital of France is ___;Paris]
+```
+
+Multi-item form (one exercise with several sub-items):
+
+```
+TrueFalse[3;Evaluate each statement;{The Earth is round;true}{Pi is rational;false}]
+FillBlank[4;Complete each sentence;{The capital of France is ___;Paris}{Water freezes at ___ °C;0}]
+Short[6;Answer each briefly;{What is 2+2?;4}{What is 5×5?;25}]
+```
+
+Format: `Type[points;header;{prompt;answer}{prompt;answer}...]`.
+
+### Points & grading
+
+- The first number in a question directive is its point value.
+- Section totals and the grand total are computed automatically.
+- Use the **eye icon** in the toolbar to toggle answer visibility in the preview.
+- Use **Interrogate** to generate a student link and grade responses.
+
+### Exercise generator
+
+The **Generate** button opens a gallery organized by subject (Mathematics, Sciences, Geography, History, Languages, Computer Science, Business). Within each subject, generators are grouped by level:
+
+- **Primary** (ages 6–11)
+- **GCSE** (ages 14–16)
+- **A Level** (ages 16–18)
+
+Choose a generator, configure the number of questions, output format, points and difficulty, then insert the generated Luate syntax at the cursor.
 
 ---
 
@@ -560,11 +399,13 @@ Use the **Export** button or `Ctrl+P` / `Cmd+P` to open the browser print dialog
 | Netral Block | `.netblock` |
 | Netral Deck | `.netdeck` |
 | Netral Doc | `.netdoc` |
+| Netral Calus | `.netcalus` |
+| Netral Luate | `.netluate` |
 
-Files can be opened by dragging them onto the Netral launcher or using the file menu within each tool.
+Files are plain text — human-readable, version-control friendly and portable. Open them by dragging onto the launcher or using the file menu in each tool.
 
 ---
 
 ## Sharing
 
-All tools support URL-based sharing. Click the **Share** button to generate a compressed link containing your entire document. Recipients can open it without any account or setup.
+All tools support URL-based sharing. Click **Share** to generate a compressed link containing the entire document. Recipients can open it without an account or setup.

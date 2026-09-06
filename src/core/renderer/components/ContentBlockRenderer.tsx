@@ -641,6 +641,73 @@ export function ContentBlockRenderer({ block }: ContentBlockRendererProps) {
         </div>
       );
 
+    case 'form':
+      return (
+        <div className="max-w-2xl mx-auto my-8">
+          <form
+            action={block.action}
+            method={block.method}
+            className="p-8 rounded-2xl border space-y-5"
+            style={{
+              borderColor: 'hsl(var(--border))',
+              backgroundColor: 'hsl(var(--card))',
+            }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const data = new FormData(e.currentTarget);
+              const params = new URLSearchParams();
+              data.forEach((v, k) => params.append(k, String(v)));
+              if (block.action.startsWith('mailto:')) {
+                window.location.href = `${block.action}?subject=Form Submission&body=${encodeURIComponent(params.toString())}`;
+              }
+            }}
+          >
+            {block.fields.map((field, idx) => (
+              <div key={idx} className="space-y-1.5">
+                <label className="block text-sm font-medium" style={{ color: 'hsl(var(--foreground))' }}>
+                  {field.label}
+                </label>
+                {field.type === 'textarea' ? (
+                  <textarea
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    rows={4}
+                    className="w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:ring-2"
+                    style={{
+                      borderColor: 'hsl(var(--border))',
+                      backgroundColor: 'hsl(var(--background))',
+                      color: 'hsl(var(--foreground))',
+                    }}
+                  />
+                ) : (
+                  <input
+                    type={field.type}
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    className="w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:ring-2"
+                    style={{
+                      borderColor: 'hsl(var(--border))',
+                      backgroundColor: 'hsl(var(--background))',
+                      color: 'hsl(var(--foreground))',
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+            <button
+              type="submit"
+              className="w-full py-3 rounded-lg font-semibold text-sm transition-colors"
+              style={{
+                backgroundColor: 'hsl(var(--primary))',
+                color: 'hsl(var(--primary-foreground))',
+              }}
+            >
+              {block.submitText}
+            </button>
+          </form>
+        </div>
+      );
+
     default:
       return null;
   }

@@ -1,10 +1,10 @@
 /**
  * Templates Modal
- * Gallery of pre-made templates for Block and Deck
+ * Gallery of pre-made templates for Block, Deck and Doc
  */
 
 import { useState } from 'react';
-import { LayoutTemplate, X, Check } from 'lucide-react';
+import { LayoutTemplate, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -28,260 +28,377 @@ interface TemplatesModalProps {
   onSelect: (content: string) => void;
 }
 
-// Block templates
+// ─── Block templates ────────────────────────────────────────────────────
+
 const blockTemplates: Template[] = [
   {
     id: 'landing',
-    name: 'Landing Page',
-    description: 'Modern landing page with hero, features and CTA',
+    name: 'SaaS Landing',
+    description: 'Modern SaaS landing page with hero, pricing and FAQ',
     preview: '🚀',
-    content: `--- My Product
+    content: `--- Nova — Modern SaaS Platform
 Theme[Modern]
-Logo[MyBrand]
+Logo[Nova]
 Navbar[
-{Home;#home}
 {Features;#features}
 {Pricing;#pricing}
+{FAQ;#faq}
 {Contact;#contact}
 ]
-Header[BigText;Build Something Amazing;Transform your ideas into reality with our powerful platform.;https://picsum.photos/1200/600;#features]
+Header[BigText;Build software your users will love;Nova gives your team the analytics, automation and speed to ship faster than ever.;https://picsum.photos/1200/600;#features]
 
 -- Features
-Bigtitle[Why Choose Us]
+Bigtitle[Everything you need to scale]
 
 Feature[
-{⚡;Lightning Fast;Built for speed and performance}
-{🔒;Secure;Enterprise-grade security}
-{🎨;Beautiful;Stunning designs out of the box}
+{⚡;Real-time;Updates flow instantly across your whole workspace}
+{📊;Insights;Beautiful dashboards with zero configuration}
+{🔒;Secure;Enterprise-grade encryption on every plan}
+{🔌;Integrations;Connect 100+ tools in one click}
+]
+
+Stats[
+{10K+;Happy teams}
+{99.9%;Uptime}
+{4.9/5;User rating}
 ]
 
 -- Pricing
+Bigtitle[Simple, fair pricing]
+
 Pricing[
-{Starter;$0/mo;For individuals, 1 project, Community support}
-{Pro;$29/mo;For teams, Unlimited projects, Priority support}
-{Enterprise;$99/mo;For organizations, Custom solutions, Dedicated support}
+{Starter;$0/mo;1 project, Community support, 1GB storage, Basic analytics}
+{Pro;$29/mo;Unlimited projects, Priority support, 100GB storage, Advanced analytics}
+{Enterprise;Custom;Dedicated manager, SSO/SAML, Unlimited storage, Custom SLA}
 ]
 
-CTA[Ready to get started?;Join thousands of happy customers;Start Free Trial;#signup]
+-- FAQ
+FAQ[
+{Can I try it for free?;Yes — the Starter plan is free forever and requires no credit card.}
+{Do you offer discounts for startups?;Absolutely, early-stage startups get 50% off the Pro plan for 12 months.}
+{Can I cancel anytime?;Of course. Your data is exportable at any time, and there are no cancellation fees.}
+]
+
+CTA[Ready to get started?;Join 10,000+ teams building with Nova;Start Free Trial;#signup]
 `,
   },
   {
     id: 'portfolio',
-    name: 'Portfolio',
-    description: 'Personal portfolio with bio and projects',
+    name: 'Creative Portfolio',
+    description: 'Personal portfolio with projects and testimonials',
     preview: '👤',
-    content: `--- John Doe - Designer
+    content: `--- Léa Moreau — Product Designer
 Theme[Minimal]
-Logo[JD]
+Logo[LM]
 Navbar[
-{About;#about}
 {Work;#work}
+{About;#about}
 {Contact;#contact}
 ]
-Header[BigText;Creative Designer;I craft beautiful digital experiences that make a difference.;https://picsum.photos/1200/600;#work]
+Header[SplitImage;Designing calm, human products;I help startups turn complex ideas into interfaces people love to use.;https://picsum.photos/800/600;#work]
 
--- About Me
+-- Work
+Bigtitle[Selected projects]
+
+Gallery[
+{https://picsum.photos/500/400?1;Mobile banking app}
+{https://picsum.photos/500/400?2;E-commerce redesign}
+{https://picsum.photos/500/400?3;Health dashboard}
+]
+
+-- About
 Column[
-{I'm a passionate designer with 10+ years of experience in creating stunning digital products. I believe in the power of simple, elegant solutions.}
-{My expertise includes UI/UX design, branding, and front-end development. I've worked with startups and Fortune 500 companies alike.}
+{I'm a product designer with 8+ years of experience across fintech, e-commerce and health. I care about accessibility, clarity and small details that make products feel effortless.}
+{My process is collaborative: I prototype early, test with real users, and ship iteratively. I've led design systems used by teams of 50+ engineers.}
 ]
 
--- My Work
-Feature[
-{🎯;Branding;Complete identity systems}
-{💻;Web Design;Modern, responsive websites}
-{📱;Mobile Apps;Intuitive app experiences}
+quote[Design is not just what it looks like, design is how it works. — Steve Jobs]
+
+-- Testimonials
+Testimonial[
+{Claire Dupont;Head of Product, Finly;Léa transformed our app — engagement doubled in a quarter.;https://i.pravatar.cc/100?img=5}
+{Marco Rossi;CEO, Shoply;The most thoughtful designer we've ever worked with.;https://i.pravatar.cc/100?img=8}
 ]
 
-quote[Design is not just what it looks like, design is how it works. - Steve Jobs]
-
-CTA[Let's work together;Have a project in mind? Let's chat.;Get in Touch;mailto:hello@example.com]
+CTA[Let's work together;Have a project in mind? I'd love to hear about it.;Get in Touch;mailto:hello@example.com]
 `,
   },
   {
-    id: 'documentation',
-    name: 'Documentation',
-    description: 'Clean documentation page with FAQ',
-    preview: '📚',
-    content: `--- Product Documentation
-Theme[Clean]
-Logo[Docs]
+    id: 'restaurant',
+    name: 'Restaurant',
+    description: 'Warm restaurant page with menu and gallery',
+    preview: '🍽️',
+    content: `--- La Table — Bistrot & Wine Bar
+Theme[Sunset]
+Logo[La Table]
 Navbar[
-{Getting Started;#start}
-{Features;#features}
+{Menu;#menu}
+{Story;#story}
+{Visit;#visit}
+]
+Header[Classic;Seasonal French cuisine;An intimate bistro in the heart of the city, serving market-fresh dishes and natural wines.;https://picsum.photos/1200/600;#menu]
+
+-- Menu
+Bigtitle[From the kitchen]
+
+Feature[
+{🥗;Starters;Burrata, roasted beets & pistachio}
+{🍝;Mains;Hand-cut pasta, slow-braised lamb}
+{🍰;Desserts;Dark chocolate fondant, crème brûlée}
+{🍷;Wine;Natural wines from small producers}
+]
+
+Gallery[
+{https://picsum.photos/500/400?5;The dining room}
+{https://picsum.photos/500/400?6;Signature dish}
+{https://picsum.photos/500/400?7;The bar}
+]
+
+-- Visit
+Column[
+{**Opening hours**
+
+Tuesday — Sunday
+6pm — 11pm}
+
+{**Find us**
+
+12 Rue des Fleurs, Paris
++33 1 23 45 67 89
+bookings@latable.example}
+]
+
+CTA[Book a table;Reservations recommended for weekends;Reserve Now;#visit]
+`,
+  },
+  {
+    id: 'agency',
+    name: 'Marketing Agency',
+    description: 'Agency site with services, team and process',
+    preview: '📈',
+    content: `--- Studio North — Growth Agency
+Theme[Ocean]
+Logo[Studio North]
+Navbar[
+{Services;#services}
+{Process;#process}
+{Team;#team}
+{Contact;#contact}
+]
+Header[BigText;We grow brands that matter;A full-service growth agency blending strategy, creative and data to move the metrics that count.;https://picsum.photos/1200/600;#services]
+
+-- Services
+Feature[
+{🎯;Brand Strategy;Positioning, messaging and identity}
+{📣;Paid Media;Performance campaigns across every channel}
+{✍️;Content;Editorial, social and video production}
+{📊;Analytics;Dashboards and conversion optimization}
+]
+
+Stats[
+{120+;Clients served}
+{$48M;Revenue generated}
+{4.9/5;Client satisfaction}
+]
+
+-- Process
+Steps[
+{1;Discover;We audit your brand, market and funnel}
+{2;Strategize;We build a data-driven growth roadmap}
+{3;Execute;We launch campaigns and creative at speed}
+{4;Optimize;We iterate weekly on what's working}
+]
+
+-- Team
+Team[
+{Anna Weber;Founder & CEO;https://i.pravatar.cc/150?img=9;10 years scaling consumer brands}
+{David Kim;Head of Growth;https://i.pravatar.cc/150?img=11;Performance marketer and analyst}
+{Emma Laurent;Creative Director;https://i.pravatar.cc/150?img=3;Award-winning brand designer}
+]
+
+CTA[Let's grow together;Book a free 30-minute strategy call;Book a Call;#contact]
+`,
+  },
+  {
+    id: 'event',
+    name: 'Event / Launch',
+    description: 'Event landing page with countdown and schedule',
+    preview: '🎟️',
+    content: `--- PixelConf 2026
+Theme[Neon]
+Logo[PixelConf]
+Navbar[
+{Speakers;#speakers}
+{Schedule;#schedule}
+{Tickets;#tickets}
+]
+Header[BigText;The design & code conference;Two days, 40 speakers and one unforgettable community. Join us in Berlin.;https://picsum.photos/1200/600;#tickets]
+
+Countdown[Conference starts;2026-06-10;Doors open at 9:00 AM]
+
+-- Speakers
+Feature[
+{🎤;Keynotes;Visionaries shaping the future of the web}
+{🧠;Workshops;Hands-on sessions with industry experts}
+{🤝;Networking;Meet 1,500 creators and makers}
+]
+
+-- Schedule
+Timeline[
+{Day 1;Talks;Keynotes and deep-dive technical sessions}
+{Day 1;Evening;Rooftop networking party}
+{Day 2;Workshops;Small-group, hands-on learning}
+{Day 2;Closing;Lightning talks and community showcase}
+]
+
+Stats[
+{40;Speakers}
+{1,500;Attendees}
+{2;Days}
+]
+
+CTA[Get your ticket;Early-bird pricing ends soon;Buy Tickets;#tickets]
+`,
+  },
+  {
+    id: 'docs',
+    name: 'Documentation',
+    description: 'Clean documentation site with FAQ and callouts',
+    preview: '📚',
+    content: `--- Acme API — Documentation
+Theme[Solarized]
+Logo[Acme Docs]
+Navbar[
+{Quickstart;#quickstart}
+{Guides;#guides}
 {FAQ;#faq}
 ]
 
--- Getting Started
+-- Quickstart
+Bigtitle[Get started in minutes]
 
-## Installation
+Def[This guide assumes you have Node.js 18+ installed on your machine.]
 
-You can install our package using npm:
+Column[
+{**Install the SDK**
 
-\`\`\`
-npm install my-package
-\`\`\`
+1. Run \`npm install acme-sdk\`
+2. Import the client
+3. Add your API key}
+{**Make your first call**
 
-## Quick Start
+1. Create a client instance
+2. Call \`client.users.list()\`
+3. Handle the response}
+]
 
-1. Import the library
-2. Initialize with your API key
-3. Start building!
+Warn[Never commit your API key to version control. Use environment variables instead.]
 
-Def[All API calls are rate-limited to 1000 requests per minute.]
-
--- Features
-
+-- Guides
 Feature[
-{📦;Easy Setup;Get started in minutes}
-{🔄;Auto Updates;Always up to date}
-{🛠;Customizable;Adapt to your needs}
+{🔑;Authentication;API keys, scopes and webhooks}
+{📦;Resources;Users, billing and events}
+{🚦;Rate limits;Understanding quotas and retries}
 ]
 
 -- FAQ
-
 FAQ[
-{How do I get an API key?;Sign up for a free account and visit your dashboard.}
-{Is there a free tier?;Yes! Our free tier includes 10,000 API calls per month.}
-{Can I use this in production?;Absolutely! We're production-ready with 99.9% uptime.}
+{What is the rate limit?;The free tier allows 1,000 requests per minute.}
+{Do you have a sandbox?;Yes — every account includes a sandbox environment.}
+{How do I get support?;Open an issue on GitHub or email support@acme.example.}
 ]
 
-Warn[This documentation is for version 2.0. For older versions, see the archive.]
-`,
-  },
-  {
-    id: 'blog',
-    name: 'Blog Post',
-    description: 'Article layout with rich content',
-    preview: '✍️',
-    content: `--- The Future of Web Development
-Theme[Editorial]
-Logo[TechBlog]
-Navbar[
-{Home;/}
-{Articles;#articles}
-{About;#about}
-]
-
--- Introduction
-
-The web is constantly evolving. In this article, we'll explore the trends that will shape the future of web development.
-
-Image[https://picsum.photos/800/400]
-
-## Key Trends
-
-**1. AI-Powered Development**
-
-Artificial intelligence is revolutionizing how we build websites. From code completion to automated testing, AI is becoming an indispensable tool.
-
-**2. Edge Computing**
-
-Bringing computation closer to users means faster, more responsive applications.
-
-**3. Web Components**
-
-Reusable, framework-agnostic components are the future of modular development.
-
-quote[The best way to predict the future is to create it. - Peter Drucker]
-
--- Conclusion
-
-The future is exciting for web developers. By staying curious and adaptable, we can build amazing things.
-
-Stats[
-{3B+;Internet Users}
-{95%;Sites Use JS}
-{100ms;Target Load Time}
-]
+CTA[Read the full reference;Browse every endpoint and parameter;View API Reference;#guides]
 `,
   },
 ];
 
-// Deck templates
+// ─── Deck templates ─────────────────────────────────────────────────────
+
 const deckTemplates: Template[] = [
   {
     id: 'pitch',
     name: 'Startup Pitch',
-    description: 'Investor pitch deck with key metrics',
+    description: 'Investor pitch deck with traction and ask',
     preview: '💼',
     content: `--- Startup Pitch Deck
-Theme[Corporate]
-Logo[StartupCo]
+Theme[Modern]
+Logo[Looply]
 
 -- The Problem
+Bigtitle[A $50B problem]
 
-Bigtitle[A $50B Problem]
-
-Businesses waste countless hours on manual processes that could be automated.
+Businesses waste hours every week on manual, repetitive workflows that could be automated.
 
 Stats[
-{72%;Time Wasted}
-{$50B;Market Size}
-{10x;Growth Potential}
+{72%;of time wasted}
+{$50B;market size}
+{10x;growth potential}
 ]
 
 -- Our Solution
+Bigtitle[Meet Looply]
 
-Bigtitle[Introducing StartupCo]
-
-We automate your workflow so you can focus on what matters.
+Looply automates your workflows so your team can focus on work that actually matters.
 
 Feature[
-{🤖;AI-Powered;Smart automation}
+{🤖;AI-powered;Smart automation that learns}
 {⚡;Fast;10x faster workflows}
-{💰;Cost-Effective;50% cost reduction}
+{💰;Cost-saving;50% lower operating costs}
 ]
 
 -- Traction
-
 Timeline[
-{2023;Launch;Product launched with 100 beta users}
-{2024;Growth;Reached 10,000 paying customers}
+{2023;Launch;Beta with 100 paying customers}
+{2024;Growth;10,000 customers and $2M ARR}
 {2025;Scale;Expanding to 5 new markets}
 ]
 
--- The Ask
-
-Bigtitle[Join Our Journey]
-
-We're raising $5M to accelerate growth.
-
-Gallery[
-{https://picsum.photos/400/300?1;Team}
-{https://picsum.photos/400/300?2;Product}
-{https://picsum.photos/400/300?3;Office}
+-- Competition
+Comparison[
+{Legacy tools;❌ Slow setup, ❌ Rigid, ❌ Expensive, ❌ Poor support}
+{Looply;✅ Setup in minutes, ✅ Flexible, ✅ Affordable, ✅ 24/7 support}
 ]
+
+-- The Ask
+Bigtitle[Join our journey]
+
+We're raising $5M to accelerate growth and double the team.
+
+Agenda[
+{1;Product;R&D and new features}
+{2;Marketing;Demand generation and sales}
+{3;Team;Hiring across engineering and GTM}
+]
+
+Speaker[The best way to predict the future is to invent it.;Alan Kay;Computer Scientist;https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Alan_Kay_%282008%29.jpg/440px-Alan_Kay_%282008%29.jpg]
 `,
   },
   {
     id: 'lecture',
     name: 'Educational Lecture',
-    description: 'Clean lecture slides with examples',
+    description: 'Clean lecture slides with concepts and code',
     preview: '🎓',
     content: `--- Introduction to Programming
 Theme[Minimal]
 Logo[CS101]
 
 -- What is Programming?
+Bigtitle[Talking to computers]
 
-Bigtitle[Talking to Computers]
+Programming is the art of giving precise instructions to a computer.
 
-Programming is the art of giving instructions to computers.
-
-Def[A program is a set of instructions that tells a computer what to do.]
+Def[A program is a set of instructions that tells a computer exactly what to do.]
 
 -- Core Concepts
-
 List[
-{📝;Variables - Store data}
-{🔄;Loops - Repeat actions}
-{❓;Conditions - Make decisions}
-{📦;Functions - Reusable code}
+{📦;Variables — store data}
+{🔁;Loops — repeat actions}
+{❓;Conditions — make decisions}
+{🧩;Functions — reuse code}
 ]
 
--- Example Code
-
+-- Example: A Function
 Code[javascript;
 function greet(name) {
   return "Hello, " + name + "!";
@@ -290,70 +407,78 @@ function greet(name) {
 console.log(greet("World"));
 ]
 
--- Key Takeaways
-
+-- Why It Matters
 Feature[
-{💡;Practice;Code every day}
-{📚;Learn;Read documentation}
-{🤝;Collaborate;Work with others}
+{💡;Problem solving;Break big problems into steps}
+{🧠;Logic;Think clearly and precisely}
+{🌍;Impact;Build tools used by millions}
 ]
 
-quote[Everyone should learn to program, because it teaches you how to think. - Steve Jobs]
+quote[Everyone should learn to program, because it teaches you how to think. — Steve Jobs]
+
+-- Key Takeaways
+List[
+{✅;Practice a little every day}
+{📚;Read code written by others}
+{🤝;Build small projects to learn}
+]
 `,
   },
   {
     id: 'report',
     name: 'Business Report',
-    description: 'Quarterly report with stats and charts',
+    description: 'Quarterly report with stats and outlook',
     preview: '📊',
-    content: `--- Q4 2024 Report
-Theme[Corporate]
-Logo[CorpInc]
+    content: `--- Q4 2025 Report
+Theme[Ocean]
+Logo[Northwind]
 
 -- Executive Summary
+Bigtitle[Record-breaking quarter]
 
-Bigtitle[Record Breaking Quarter]
-
-We achieved our best quarter yet with 45% YoY growth.
+We delivered our strongest quarter yet, with 45% year-over-year growth.
 
 Stats[
 {$12M;Revenue}
-{45%;YoY Growth}
-{98%;Customer Satisfaction}
+{45%;YoY growth}
+{98%;Customer satisfaction}
 ]
 
 -- Key Achievements
-
 Timeline[
-{Oct;Product Launch;Released v3.0 with AI features}
-{Nov;Partnership;Signed deal with Fortune 500 company}
-{Dec;Expansion;Opened offices in 3 new cities}
+{Oct;Launch;Released v3.0 with AI features}
+{Nov;Partnership;Signed a Fortune 500 deal}
+{Dec;Expansion;Opened offices in 3 cities}
 ]
 
 -- Challenges & Solutions
-
 Column[
 {**Challenges**
 
 - Supply chain delays
-- Talent acquisition
-- Market competition}
+- Talent competition
+- Market uncertainty}
+
 {**Solutions**
 
 - Diversified suppliers
-- Improved employer brand
+- Stronger employer brand
 - Focused on innovation}
 ]
 
--- 2025 Outlook
-
+-- 2026 Outlook
 Feature[
-{🎯;$20M;Revenue Target}
-{👥;100+;New Hires}
-{🌍;5;New Markets}
+{🎯;$20M;Revenue target}
+{👥;100+;New hires planned}
+{🌍;5;New markets}
 ]
 
 Badge[CONFIDENTIAL]
+
+-- Thank You
+Bigtitle[Questions?]
+
+Contact the leadership team for the full report.
 `,
   },
   {
@@ -362,73 +487,120 @@ Badge[CONFIDENTIAL]
     description: 'Interactive workshop with exercises',
     preview: '🛠',
     content: `--- Design Thinking Workshop
-Theme[Creative]
+Theme[Sunset]
 Logo[Workshop]
 
--- Welcome!
+-- Welcome
+Bigtitle[Let's create together]
 
-Bigtitle[Let's Create Together]
+This hands-on workshop teaches the fundamentals of design thinking.
 
-This workshop will teach you the fundamentals of design thinking.
-
-Warn[Please have pen and paper ready!]
+Warn[Have pen and paper ready — you'll be sketching!]
 
 -- The 5 Steps
-
 List[
-{1️⃣;Empathize - Understand users}
-{2️⃣;Define - Frame the problem}
-{3️⃣;Ideate - Generate ideas}
-{4️⃣;Prototype - Build solutions}
-{5️⃣;Test - Validate with users}
+{1️⃣;Empathize — understand your users}
+{2️⃣;Define — frame the problem}
+{3️⃣;Ideate — generate ideas}
+{4️⃣;Prototype — build solutions}
+{5️⃣;Test — validate with users}
 ]
 
 -- Exercise 1: Empathy Map
-
 Column[
 {**What they SAY**
 
-Listen to user interviews
+Listen to user interviews and capture quotes.
 
 **What they THINK**
 
-Understand motivations}
+Infer underlying motivations and concerns.}
+
 {**What they DO**
 
-Observe behaviors
+Observe behaviours and actions.
 
 **What they FEEL**
 
-Identify emotions}
+Identify emotions and pain points.}
 ]
 
--- Group Activity
+-- Exercise 2: Ideate
+Def[There are no bad ideas in brainstorming — quantity over quality!]
 
-Bigtitle[Brainstorm Time!]
+Bigtitle[Brainstorm time!]
 
-Take 10 minutes to generate as many ideas as possible.
-
-Def[There are no bad ideas in brainstorming. Quantity over quality!]
+Take 10 minutes to generate as many ideas as possible for your problem.
 
 -- Wrap Up
-
 Feature[
-{📧;Follow Up;Check your email for resources}
-{💬;Feedback;Share your thoughts}
-{🎓;Certificate;Complete the survey}
+{📧;Follow up;Check your inbox for resources}
+{💬;Feedback;Share your thoughts with us}
+{🎓;Certificate;Complete the survey to claim yours}
 ]
 
-quote[Design is not just what it looks like, design is how it works.]
+quote[Design is not just what it looks like, design is how it works. — Steve Jobs]
+`,
+  },
+  {
+    id: 'marketing',
+    name: 'Marketing Campaign',
+    description: 'Campaign pitch with goals and creative',
+    preview: '📣',
+    content: `--- Spring Campaign 2026
+Theme[Neon]
+Logo[BrandCo]
+
+-- Campaign Overview
+Bigtitle[Make some noise]
+
+A bold, always-on campaign to drive awareness and sign-ups this spring.
+
+Stats[
+{2M;Reach target}
+{50K;Sign-ups goal}
+{8;Channels}
+]
+
+-- Goals
+List[
+{🎯;Increase brand awareness by 40%}
+{📈;Drive 50,000 new sign-ups}
+{💬;Boost social engagement 3x}
+]
+
+-- Creative Direction
+Comparison[
+{Before;😴 Generic stock, 🤐 No personality, 📉 Low engagement}
+{After;🎨 Bold art direction, 😄 Relatable tone, 📈 Higher engagement}
+]
+
+-- Channel Mix
+Gallery[
+{https://picsum.photos/500/400?11;Social}
+{https://picsum.photos/500/400?12;Display}
+{https://picsum.photos/500/400?13;Video}
+]
+
+-- Timeline
+Agenda[
+{1;Weeks 1–2;Teaser phase}
+{2;Weeks 3–6;Launch & amplification}
+{3;Weeks 7–8;Retargeting & wrap}
+]
+
+Badge[APPROVED FOR LAUNCH]
 `,
   },
 ];
 
-// Doc templates
+// ─── Doc templates ──────────────────────────────────────────────────────
+
 const docTemplates: Template[] = [
   {
     id: 'cv',
     name: 'CV / Resume',
-    description: 'Professional resume with sections',
+    description: 'Professional resume with clear sections',
     preview: '👤',
     content: `--- Curriculum Vitae
 Theme[Minimal]
@@ -505,7 +677,7 @@ Mention Bien. Parcours Mathématiques et Informatique.
     description: 'Quarterly or annual business report',
     preview: '📊',
     content: `--- Rapport Trimestriel Q4 2024
-Theme[Corporate]
+Theme[Modern]
 
 -- Résumé exécutif
 
@@ -574,7 +746,7 @@ Callout[warning;Les projections sont soumises aux conditions macroéconomiques e
     description: 'Structured meeting notes template',
     preview: '📝',
     content: `--- Compte-Rendu de Réunion
-Theme[Clean]
+Theme[Ocean]
 
 -- Informations
 
@@ -709,12 +881,85 @@ Dans l'attente de votre réponse, je vous prie d'agréer, Madame Martin, l'expre
 **Jean Dupont**
 `,
   },
+  {
+    id: 'proposal',
+    name: 'Project Proposal',
+    description: 'Structured project proposal or thesis outline',
+    preview: '📑',
+    content: `--- Proposition de Projet — Refonte Plateforme
+Theme[Latte]
+
+-- Contexte
+
+# Contexte et objectifs
+
+Callout[info;Ce document présente la proposition de refonte de la plateforme interne pour l'exercice 2025-2026.]
+
+## Problématique
+
+La plateforme actuelle souffre de :
+- Temps de chargement élevés (>4s)
+- Une expérience utilisateur datée
+- Des coûts de maintenance croissants
+
+## Objectifs
+
+1. Réduire le temps de chargement sous 1.5s
+2. Moderniser l'interface utilisateur
+3. Réduire les coûts d'infrastructure de 30%
+
+---
+
+-- Périmètre
+
+## Périmètre proposé
+
+| Phase | Contenu | Durée estimée |
+|-------|---------|---------------|
+| 1 | Audit & cadrage | 3 semaines |
+| 2 | Design & prototype | 6 semaines |
+| 3 | Développement | 10 semaines |
+| 4 | Tests & déploiement | 4 semaines |
+
+Callout[warning;Le périmètre pourra évoluer après la phase de cadrage.]
+
+---
+
+-- Budget
+
+## Budget prévisionnel
+
+- **Équipe produit** : 4 développeurs, 1 designer, 1 chef de projet
+- **Infrastructure** : migration vers une architecture conteneurisée
+- **Formation** : accompagnement des équipes métiers
+
+---
+
+-- Risques
+
+## Risques identifiés
+
+- [ ] Retard sur les dépendances externes
+- [ ] Résistance au changement des utilisateurs
+- [ ] Dépassement budgétaire
+
+Callout[success;Un comité de pilotage hebdomadaire permettra de suivre l'avancement et de lever les blocages rapidement.]
+
+---
+
+-- Conclusion
+
+## Prochaine étape
+
+Validation de cette proposition lors du comité de direction, puis lancement de la phase 1 sous deux semaines.
+`,
+  },
 ];
 
 export function TemplatesModal({ mode, onSelect }: TemplatesModalProps) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
-  
+
   const templates = mode === 'block' ? blockTemplates : mode === 'deck' ? deckTemplates : docTemplates;
 
   const handleSelect = (template: Template) => {
@@ -750,17 +995,14 @@ export function TemplatesModal({ mode, onSelect }: TemplatesModalProps) {
                     : 'border-border bg-card'
                 }`}
               >
-                {/* Selected indicator */}
                 {selected === template.id && (
                   <div className="absolute top-2 right-2 p-1 rounded-full bg-primary text-primary-foreground">
                     <Check className="h-3 w-3" />
                   </div>
                 )}
-                
-                {/* Preview icon */}
+
                 <div className="text-3xl mb-2">{template.preview}</div>
-                
-                {/* Content */}
+
                 <h3 className="font-semibold text-foreground mb-1">{template.name}</h3>
                 <p className="text-xs text-muted-foreground line-clamp-2">
                   {template.description}

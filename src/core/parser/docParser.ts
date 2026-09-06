@@ -8,9 +8,10 @@ import DOMPurify from 'dompurify';
 
 export interface DocSection {
   title: string;
-  level: 1 | 2; // 1 for ---, 2 for --
+  level: 1 | 2;
   content: string;
   callouts: DocCallout[];
+  id: string; // for TOC anchors
 }
 
 export interface DocCallout {
@@ -18,10 +19,16 @@ export interface DocCallout {
   message: string;
 }
 
+export interface DocFootnote {
+  id: string;
+  text: string;
+}
+
 export interface DocDocument {
   title: string;
   theme: string;
   sections: DocSection[];
+  footnotes: DocFootnote[];
 }
 
 /**
@@ -33,7 +40,8 @@ export function parseDocDocument(input: string): DocDocument {
   let title = 'Untitled Document';
   let theme = 'Modern';
   const sections: DocSection[] = [];
-  
+  const footnotes: DocFootnote[] = [];
+  let sectionCounter = 0;
   let currentSection: DocSection | null = null;
   let contentBuffer: string[] = [];
   
@@ -73,6 +81,7 @@ export function parseDocDocument(input: string): DocDocument {
         level: 1,
         content: '',
         callouts: [],
+        id: `section-${++sectionCounter}`,
       };
       continue;
     }
@@ -86,6 +95,7 @@ export function parseDocDocument(input: string): DocDocument {
         level: 2,
         content: '',
         callouts: [],
+        id: `section-${++sectionCounter}`,
       };
       continue;
     }
@@ -105,10 +115,24 @@ export function parseDocDocument(input: string): DocDocument {
       level: 1,
       content: processedContent,
       callouts,
+      id: 'section-default',
     });
   }
+
+  // Extract footnotes from all section content
+  const footnoteRegex = /\[\^(\d+)\]:\s*(.+)/g;
+  for (const section of sections) {
+    let match;
+    while ((match = footnoteRegex.exec(section.content)) !== null) {
+      footnotes.push({ id: match[1], text: match[2].trim() });
+    }
+    // Remove footnote definitions from content
+    section.content = section.content.replace(/\[\^(\d+)\]:\s*.+/g, '').trim();
+    // Convert footnote references [^1] to superscript links
+    section.content = section.content.replace(/\[\^(\d+)\]/g, '<sup><a href="#fn-$1" id="fnref-$1" class="footnote-ref">$1</a></sup>');
+  }
   
-  return { title, theme, sections };
+  return { title, theme, sections, footnotes };
 }
 
 /**

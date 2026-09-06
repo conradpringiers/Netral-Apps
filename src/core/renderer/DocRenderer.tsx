@@ -4,7 +4,7 @@
  */
 
 import { useMemo } from 'react';
-import { parseDocDocument, renderDocContent, DocCallout } from '@/core/parser/docParser';
+import { parseDocDocument, renderDocContent, DocCallout, DocFootnote } from '@/core/parser/docParser';
 import { getTheme, generateThemeCSS, ThemeName } from '@/core/themes/themes';
 
 interface DocRendererProps {
@@ -108,9 +108,31 @@ export function DocRenderer({ content, className = '' }: DocRendererProps) {
           </header>
         )}
 
+        {/* Table of Contents - auto-generated if 3+ sections */}
+        {doc.sections.filter(s => s.title).length >= 3 && (
+          <nav className="mb-10 p-5 rounded-xl border" style={{ borderColor: `hsl(${theme.colors.border})`, backgroundColor: `hsl(${theme.colors.muted})` }}>
+            <h3 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: `hsl(${theme.colors.mutedForeground})` }}>
+              Table of Contents
+            </h3>
+            <ul className="space-y-1.5">
+              {doc.sections.filter(s => s.title).map((section, i) => (
+                <li key={i} style={{ paddingLeft: section.level === 2 ? '1rem' : 0 }}>
+                  <a
+                    href={`#${section.id}`}
+                    className="text-sm hover:underline transition-colors"
+                    style={{ color: `hsl(${section.level === 1 ? theme.colors.primary : theme.colors.mutedForeground})` }}
+                  >
+                    {section.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+
         {/* Sections */}
         {doc.sections.map((section, index) => (
-          <section key={index} className="mb-10">
+          <section key={index} className="mb-10" id={section.id}>
             {section.title && (
               section.level === 1 ? (
                 <h2 
@@ -162,6 +184,23 @@ export function DocRenderer({ content, className = '' }: DocRendererProps) {
             )}
           </section>
         ))}
+
+        {/* Footnotes */}
+        {doc.footnotes && doc.footnotes.length > 0 && (
+          <footer className="mt-12 pt-6 border-t" style={{ borderColor: `hsl(${theme.colors.border})` }}>
+            <h4 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: `hsl(${theme.colors.mutedForeground})` }}>
+              Footnotes
+            </h4>
+            <ol className="space-y-1.5 list-decimal list-inside text-sm" style={{ color: `hsl(${theme.colors.mutedForeground})` }}>
+              {doc.footnotes.map((fn) => (
+                <li key={fn.id} id={`fn-${fn.id}`}>
+                  {fn.text}{' '}
+                  <a href={`#fnref-${fn.id}`} className="text-xs" style={{ color: `hsl(${theme.colors.primary})` }}>↩</a>
+                </li>
+              ))}
+            </ol>
+          </footer>
+        )}
       </div>
 
       {/* Styles for rendered content */}

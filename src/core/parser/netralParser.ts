@@ -14,6 +14,7 @@ export interface NetralDocument {
   header: HeaderConfig | null;
   sections: Section[];
   animateOnScroll: boolean;
+  meta?: MetaConfig;
 }
 
 export interface NavbarItem {
@@ -60,7 +61,23 @@ export type ContentBlock =
   | { type: 'progress'; value: number; label: string }
   | { type: 'steps'; items: StepItem[] }
   | { type: 'metric'; items: MetricItem[] }
-  | { type: 'showcase'; image: string; title: string; subtitle: string; specs: ShowcaseSpec[] };
+  | { type: 'showcase'; image: string; title: string; subtitle: string; specs: ShowcaseSpec[] }
+  | { type: 'form'; fields: FormField[]; action: string; method: string; submitText: string };
+
+export interface MetaConfig {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+export interface FormField {
+  type: 'text' | 'email' | 'textarea' | 'select';
+  name: string;
+  label: string;
+  placeholder?: string;
+  required?: boolean;
+  options?: string[]; // for select
+}
 
 export interface StepItem {
   number: string;
@@ -178,7 +195,19 @@ export function parseNetralDocument(input: string): NetralDocument {
       continue;
     }
 
-    // Logo[...]
+    // Meta[title;description;image]
+    const metaMatch = trimmed.match(/^Meta\[([^\]]+)\]/i);
+    if (metaMatch) {
+      const parts = metaMatch[1].split(';').map(s => s.trim());
+      doc.meta = {
+        title: parts[0] || undefined,
+        description: parts[1] || undefined,
+        image: parts[2] || undefined,
+      };
+      i++;
+      continue;
+    }
+
     const logoMatch = trimmed.match(/^Logo\[([^\]]+)\]/i);
     if (logoMatch) {
       const value = logoMatch[1].trim();
@@ -496,7 +525,15 @@ export function parseNetralDocument(input: string): NetralDocument {
         continue;
       }
 
-      // Regular markdown content
+      // Form[...]
+      if (trimmed.startsWith('Form[')) {
+        flushMarkdown();
+        const { content, endIndex } = extractBracketContent(lines, i);
+        currentSection.content.push(parseFormContent(content));
+        i = endIndex + 1;
+        continue;
+      }
+
       markdownBuffer += line + '\n';
     }
 
@@ -829,4 +866,39 @@ function parseMetricItems(content: string): MetricItem[] {
   }
   
   return items;
+}
+
+/**
+ * Parse form content: {type;name;label;placeholder}
+ * Action and submit text from first line: action;method;submitText
+ */
+function parseFormContent(content: string): ContentBlock & { type: 'form' } {
+  const lines = content.split('\n').map(s => s.trim()).filter(Boolean);
+  const fields: FormField[] = [];
+  let action = 'mailto:contact@example.com';
+  let method = 'POST';
+  let submitText = 'Submit';
+
+  // First item could be config: {action;method;submitText}
+  const configMatch = content.match(/\{(mailto:[^;]*|https?:[^;]*);([^;]*);([^}]*)\}/);
+  if (configMatch) {
+    action = configMatch[1].trim();
+    method = configMatch[2].trim() || 'POST';
+    submitText = configMatch[3].trim() || 'Submit';
+  }
+
+  // Field items: {type;name;label;placeholder}
+  const fieldRegex = /\{(text|email|textarea|select);([^;]*);([^;]*);?([^}]*)\}/gi;
+  let match;
+  while ((match = fieldRegex.exec(content)) !== null) {
+    const field: FormField = {
+      type: match[1].toLowerCase() as FormField['type'],
+      name: match[2].trim(),
+      label: match[3].trim(),
+      placeholder: match[4]?.trim() || '',
+    };
+    fields.push(field);
+  }
+
+  return { type: 'form', fields, action, method, submitText };
 }

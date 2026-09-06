@@ -98,7 +98,7 @@ export function PresenterPopup() {
       <div className="h-screen bg-zinc-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-2 border-white/30 border-t-white rounded-full mx-auto mb-4" />
-          <p className="text-white/60 text-sm">Connexion à la présentation...</p>
+          <p className="text-white/60 text-sm">Connecting to presentation...</p>
         </div>
       </div>
     );
@@ -161,7 +161,7 @@ export function PresenterPopup() {
       <div className="flex-1 flex min-h-0 p-4 gap-4">
         {/* Current slide */}
         <div className="flex-[3] flex flex-col min-w-0">
-          <div className="text-xs text-white/40 mb-2 uppercase tracking-wide">Slide actuelle</div>
+          <div className="text-xs text-white/40 mb-2 uppercase tracking-wide">Current slide</div>
           <div className="flex-1 relative rounded-lg overflow-hidden shadow-2xl" style={{ aspectRatio: '16/9' }}>
             <div className="absolute inset-0" style={themeVars}>
               <MiniSlide doc={doc} slideIndex={currentSlide} theme={theme} />
@@ -173,7 +173,7 @@ export function PresenterPopup() {
         <div className="flex-[1.5] flex flex-col gap-4 min-w-0">
           {/* Next slide */}
           <div className="flex flex-col">
-            <div className="text-xs text-white/40 mb-2 uppercase tracking-wide">Slide suivante</div>
+            <div className="text-xs text-white/40 mb-2 uppercase tracking-wide">Next slide</div>
             <div className="relative rounded-lg overflow-hidden bg-zinc-800 border border-zinc-700" style={{ aspectRatio: '16/9' }}>
               {currentSlide < totalSlides ? (
                 <div className="absolute inset-0" style={themeVars}>
@@ -181,7 +181,7 @@ export function PresenterPopup() {
                 </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-white/30 text-sm">
-                  Fin de la présentation
+                  End of presentation
                 </div>
               )}
             </div>
@@ -194,7 +194,7 @@ export function PresenterPopup() {
               {notes ? (
                 <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">{notes}</p>
               ) : (
-                <p className="text-white/30 text-sm italic">Pas de notes pour cette slide.</p>
+                <p className="text-white/30 text-sm italic">No notes for this slide.</p>
               )}
             </div>
           </div>
