@@ -1,0 +1,38 @@
+--- Netral v1.4 — Release Notes
+Theme[Modern]
+
+Bigtitle[Netral v1.4 is here 🎉]
+
+A new release of Netral is live, and it's our biggest one yet: we're introducing **Netral Luate**, a brand-new tool for creating exams and quizzes. We also refreshed the themes, improved autocompletion, and added a few tools that make writing faster.
+
+## Meet Netral Luate
+
+Image[https://netralapps.netlify.app/img/6.png]
+
+Netral Luate is a whole new way to build tests. Instead of hunting for exercises online or writing them by hand, you generate them in seconds — either by typing simple Netral syntax or by picking from the built-in generator.
+
+It covers seven subjects — math, sciences, geography, history, languages, computer science and business — each organised into three levels: Primary, GCSE and A Level. That means every question is pitched exactly where your students are.
+
+The generator is also fully algorithmic: it creates fresh, random exercises on every run, so no two students ever get the same paper.
+
+## Share, answer and grade
+
+Image[https://netralapps.netlify.app/img/10.png]
+
+Once your exam is ready, generate a link and share it with your students. They answer online and receive a code to send back to you. Luate then grades what it can automatically and collects the rest for manual correction.
+
+From a single dashboard you can review results student by student, export a correction to PDF, or print a clean answer key.
+
+## A fresh look for your themes
+
+Image[https://netralapps.netlify.app/img/1.png]
+
+We also refined the typography. Ocean, Minimal and Sunset now use clean, modern typefaces instead of the old serif mixes. Every theme feels cohesive out of the box, and switching is still just one click.
+
+## The small things
+
+This release also ships a rebuilt syntax reference, mode-specific autocompletion, new templates, a **Tools** menu with stock images and a lorem ipsum generator, and a direct **web page** share link for Block sites.
+
+quote[Create without limits. — Netral]
+
+CTA[Try Netral v1.4;Meet Luate and see what's new;Launch Netral;https://netralapps.netlify.app]

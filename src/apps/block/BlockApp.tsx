@@ -9,6 +9,7 @@ import { HelpModal } from '@/shared/components/HelpModal';
 import { FileMenu } from '@/shared/components/FileMenu';
 import { TemplatesModal } from '@/shared/components/TemplatesModal';
 import { ToolsMenu } from '@/shared/components/ToolsMenu';
+import { useAutosave } from '@/shared/components/AutosaveProvider';
 import { ThemeSelector } from '@/shared/components/ThemeSelector';
 import { ShareButton } from '@/shared/components/ShareButton';
 import { getCharCount } from '@/core/renderer/markdownRenderer';
@@ -103,11 +104,13 @@ quote[Simplicity is the ultimate sophistication. - Leonardo da Vinci]
 
 interface BlockAppProps {
   initialContent?: string;
+  documentId?: string;
   onBack: () => void;
 }
 
-export function BlockApp({ initialContent, onBack }: BlockAppProps) {
+export function BlockApp({ initialContent, documentId, onBack }: BlockAppProps) {
   const [content, setContent] = useState(initialContent || DEFAULT_CONTENT);
+  useAutosave('block', content, documentId);
   const [viewMode, setViewMode] = useState<'split' | 'editor' | 'preview'>('split');
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<EditorMethods>(null);

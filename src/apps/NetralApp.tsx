@@ -22,6 +22,7 @@ export function NetralApp() {
   const [initialContent, setInitialContent] = useState<string | undefined>();
   const [isPresenterPopup, setIsPresenterPopup] = useState(false);
   const [siteContent, setSiteContent] = useState<string | null>(null);
+  const [activeDocumentId, setActiveDocumentId] = useState<string | null>(null);
 
   // Handle URL params on mount
   useEffect(() => {
@@ -69,14 +70,16 @@ export function NetralApp() {
     }
   }, []);
 
-  const handleSelectMode = useCallback((selectedMode: NetralMode, content?: string) => {
+  const handleSelectMode = useCallback((selectedMode: NetralMode, content?: string, documentId?: string) => {
     setMode(selectedMode);
     setInitialContent(content);
+    setActiveDocumentId(documentId ?? null);
   }, []);
 
   const handleBack = useCallback(() => {
     setMode(null);
     setInitialContent(undefined);
+    setActiveDocumentId(null);
   }, []);
 
   const handleFileDrop = useCallback((e: React.DragEvent) => {
@@ -119,11 +122,11 @@ export function NetralApp() {
     );
   }
 
-  if (mode === 'block') return <BlockApp initialContent={initialContent} onBack={handleBack} />;
-  if (mode === 'deck') return <DeckApp initialContent={initialContent} onBack={handleBack} />;
-  if (mode === 'doc') return <DocApp initialContent={initialContent} onBack={handleBack} />;
-  if (mode === 'calus') return <CalusApp initialContent={initialContent} onBack={handleBack} />;
-  if (mode === 'luate') return <LuateApp initialContent={initialContent} onBack={handleBack} />;
+  if (mode === 'block') return <BlockApp initialContent={initialContent} documentId={activeDocumentId ?? undefined} onBack={handleBack} />;
+  if (mode === 'deck') return <DeckApp initialContent={initialContent} documentId={activeDocumentId ?? undefined} onBack={handleBack} />;
+  if (mode === 'doc') return <DocApp initialContent={initialContent} documentId={activeDocumentId ?? undefined} onBack={handleBack} />;
+  if (mode === 'calus') return <CalusApp initialContent={initialContent} documentId={activeDocumentId ?? undefined} onBack={handleBack} />;
+  if (mode === 'luate') return <LuateApp initialContent={initialContent} documentId={activeDocumentId ?? undefined} onBack={handleBack} />;
 
   return (
     <div onDrop={handleFileDrop} onDragOver={handleDragOver} className="h-screen">

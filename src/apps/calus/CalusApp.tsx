@@ -7,6 +7,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Editor } from '@/components/Editor';
 import { CalusRenderer } from '@/core/renderer/CalusRenderer';
+import { useAutosave } from '@/shared/components/AutosaveProvider';
 import { parseCalus, CalusResult } from '@/core/parser/calusParser';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, Calculator, Eye, Code2, RotateCcw } from 'lucide-react';
@@ -53,11 +54,13 @@ g(pi)
 
 interface CalusAppProps {
   initialContent?: string;
+  documentId?: string;
   onBack: () => void;
 }
 
-export function CalusApp({ initialContent, onBack }: CalusAppProps) {
+export function CalusApp({ initialContent, documentId, onBack }: CalusAppProps) {
   const [content, setContent] = useState(initialContent || DEFAULT_CONTENT);
+  useAutosave('calus', content, documentId);
   const [mobileView, setMobileView] = useState<'editor' | 'preview'>('editor');
   const isMobile = useIsMobile();
 

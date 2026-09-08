@@ -4,8 +4,9 @@
  */
 
 import { useRef, useState } from 'react';
-import { Layers, Presentation, Upload, FileText, GraduationCap, Workflow, Settings, Sun, Moon, Pentagon } from 'lucide-react';
+import { Layers, Presentation, Upload, FileText, GraduationCap, Workflow, Settings, Sun, Moon, Pentagon, Save, History, X } from 'lucide-react';
 import { useDarkMode } from '@/shared/components/DarkModeProvider';
+import { useAutosaveContext } from '@/shared/components/AutosaveProvider';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +17,7 @@ import {
 export type NetralMode = 'block' | 'deck' | 'doc' | 'calus' | 'luate' | null;
 
 interface LauncherProps {
-  onSelectMode: (mode: NetralMode, content?: string) => void;
+  onSelectMode: (mode: NetralMode, content?: string, documentId?: string) => void;
 }
 
 const tools = [
@@ -28,10 +29,21 @@ const tools = [
   { id: 'flow' as const, name: 'Netral Flow', description: 'An ultra-simple visual programming language', icon: Workflow, gradient: 'from-rose-500 to-rose-600', shadow: 'shadow-rose-500/20', comingSoon: true },
 ];
 
+function timeAgo(ts: number): string {
+  const diff = Date.now() - ts;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return 'just now';
+  if (min < 60) return `${min}m ago`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
 export function Launcher({ onSelectMode }: LauncherProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const { mode, setMode } = useDarkMode();
+  const { enabled, toggle, recent, remove, clear } = useAutosaveContext();
 
   const handleFileLoad = (file: File) => {
     const reader = new FileReader();
@@ -62,10 +74,15 @@ export function Launcher({ onSelectMode }: LauncherProps) {
               <Settings className="h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuContent align="end" className="w-52">
             <DropdownMenuItem onClick={() => setMode(mode === 'dark' ? 'light' : 'dark')} className="gap-2 cursor-pointer">
               {mode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               {mode === 'dark' ? 'Light mode' : 'Dark mode'}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={toggle} className="gap-2 cursor-pointer">
+              <Save className="h-4 w-4" />
+              Autosave
+              <span className="ml-auto text-xs text-muted-foreground">{enabled ? 'On' : 'Off'}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -103,6 +120,42 @@ export function Launcher({ onSelectMode }: LauncherProps) {
             </button>
           ))}
         </div>
+
+        {/* Recent documents */}
+        {enabled && recent.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <History className="h-4 w-4 text-muted-foreground" />
+                Recent documents
+              </h2>
+              <button onClick={clear} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                Clear all
+              </button>
+            </div>
+            <div className="space-y-2">
+              {recent.map((doc) => {
+                const tool = tools.find((t) => t.id === doc.mode);
+                return (
+                  <div key={doc.id} className="group flex items-center gap-2 p-2.5 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors">
+                    <button onClick={() => onSelectMode(doc.mode, doc.content, doc.id)} className="flex flex-1 items-center gap-3 text-left min-w-0">
+                      <div className={`inline-flex p-2 rounded-lg bg-gradient-to-br ${tool?.gradient ?? 'from-slate-500 to-slate-600'} shrink-0`}>
+                        {tool ? <tool.icon className="h-4 w-4 text-white" /> : null}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground truncate">{doc.title}</p>
+                        <p className="text-xs text-muted-foreground">{tool?.name ?? doc.mode} · {timeAgo(doc.updatedAt)}</p>
+                      </div>
+                    </button>
+                    <button onClick={() => remove(doc.id)} className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-muted transition-colors opacity-0 group-hover:opacity-100">
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Drag & Drop */}
         <input ref={fileInputRef} type="file" accept=".netblock,.netdeck,.netdoc,.netcalus,.netluate,.txt" onChange={handleFileInput} className="hidden" />

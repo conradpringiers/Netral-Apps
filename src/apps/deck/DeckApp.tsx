@@ -11,6 +11,7 @@ import { HelpModal } from '@/shared/components/HelpModal';
 import { FileMenu } from '@/shared/components/FileMenu';
 import { TemplatesModal } from '@/shared/components/TemplatesModal';
 import { ToolsMenu } from '@/shared/components/ToolsMenu';
+import { useAutosave } from '@/shared/components/AutosaveProvider';
 import { ThemeSelector } from '@/shared/components/ThemeSelector';
 import { ShareButton } from '@/shared/components/ShareButton';
 import { getCharCount } from '@/core/renderer/markdownRenderer';
@@ -39,11 +40,13 @@ import {
 
 interface DeckAppProps {
   initialContent?: string;
+  documentId?: string;
   onBack: () => void;
 }
 
-export function DeckApp({ initialContent, onBack }: DeckAppProps) {
+export function DeckApp({ initialContent, documentId, onBack }: DeckAppProps) {
   const [content, setContent] = useState(initialContent || getDefaultDeckContent());
+  useAutosave('deck', content, documentId);
   const [viewMode, setViewMode] = useState<'split' | 'editor' | 'preview'>('split');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [launchMode, setLaunchMode] = useState<'none' | 'present' | 'presenter'>('none');

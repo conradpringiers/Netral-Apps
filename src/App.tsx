@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { DarkModeProvider, DarkModePrompt } from "@/shared/components/DarkModeProvider";
+import { AutosaveProvider } from "@/shared/components/AutosaveProvider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -14,7 +15,8 @@ const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <DarkModeProvider>
-        <TooltipProvider>
+        <AutosaveProvider>
+          <TooltipProvider>
           <Toaster />
           <Sonner />
           <DarkModePrompt />
@@ -24,7 +26,8 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
-        </TooltipProvider>
+          </TooltipProvider>
+        </AutosaveProvider>
       </DarkModeProvider>
     </QueryClientProvider>
   </HelmetProvider>

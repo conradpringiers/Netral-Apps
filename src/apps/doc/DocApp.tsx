@@ -5,6 +5,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Editor, EditorMethods } from '@/components/Editor';
 import { DocRenderer } from '@/core/renderer/DocRenderer';
+import { useAutosave } from '@/shared/components/AutosaveProvider';
 import { HelpModal } from '@/shared/components/HelpModal';
 import { TemplatesModal } from '@/shared/components/TemplatesModal';
 import { FileMenu } from '@/shared/components/FileMenu';
@@ -37,11 +38,13 @@ import {
 
 interface DocAppProps {
   initialContent?: string;
+  documentId?: string;
   onBack: () => void;
 }
 
-export function DocApp({ initialContent, onBack }: DocAppProps) {
+export function DocApp({ initialContent, documentId, onBack }: DocAppProps) {
   const [content, setContent] = useState(initialContent || getDefaultDocContent());
+  useAutosave('doc', content, documentId);
   const [viewMode, setViewMode] = useState<'split' | 'editor' | 'preview'>('split');
   const [exportOpen, setExportOpen] = useState(false);
   const editorContainerRef = useRef<HTMLDivElement>(null);

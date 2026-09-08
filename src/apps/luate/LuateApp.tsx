@@ -6,6 +6,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Editor, EditorMethods } from '@/components/Editor';
 import { LuateRenderer } from '@/core/renderer/LuateRenderer';
+import { useAutosave } from '@/shared/components/AutosaveProvider';
 import { HelpModal } from '@/shared/components/HelpModal';
 import { FileMenu } from '@/shared/components/FileMenu';
 import { InterrogateModal } from './InterrogateModal';
@@ -44,11 +45,13 @@ import {
 
 interface LuateAppProps {
   initialContent?: string;
+  documentId?: string;
   onBack: () => void;
 }
 
-export function LuateApp({ initialContent, onBack }: LuateAppProps) {
+export function LuateApp({ initialContent, documentId, onBack }: LuateAppProps) {
   const [content, setContent] = useState(initialContent || getDefaultLuateContent());
+  useAutosave('luate', content, documentId);
   const [viewMode, setViewMode] = useState<'split' | 'editor' | 'preview'>('split');
   const [showAnswers, setShowAnswers] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
