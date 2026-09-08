@@ -7,6 +7,7 @@ import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Editor, EditorMethods } from '@/components/Editor';
 import { LuateRenderer } from '@/core/renderer/LuateRenderer';
 import { useAutosave } from '@/shared/components/AutosaveProvider';
+import { collectStyles, printHtml } from '@/lib/platform';
 import { HelpModal } from '@/shared/components/HelpModal';
 import { FileMenu } from '@/shared/components/FileMenu';
 import { InterrogateModal } from './InterrogateModal';
@@ -91,27 +92,24 @@ export function LuateApp({ initialContent, documentId, onBack }: LuateAppProps) 
     });
   }, []);
 
-  const handlePrint = (withAnswers: boolean) => {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      toast({ title: 'Error', description: 'Could not open print window.', variant: 'destructive' });
-      return;
-    }
+  const handlePrint = async (withAnswers: boolean) => {
     const previewElement = previewRef.current;
     if (!previewElement) return;
 
-    // Temporarily set answer mode, render, then print
     const prevShowAnswers = showAnswers;
     setShowAnswers(withAnswers);
-    
-    setTimeout(() => {
-      const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-        .map(el => el.outerHTML).join('\n');
 
-      printWindow.document.write(`<!DOCTYPE html><html><head><title>${documentTitle}${withAnswers ? ' — Answer Key' : ''}</title><meta charset="utf-8">${styles}<style>@page{margin:1.5cm;size:A4}body{font-family:'Inter',system-ui,sans-serif;background:white}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style></head><body>${previewRef.current?.innerHTML || ''}</body></html>`);
-      printWindow.document.close();
-      setTimeout(() => printWindow.print(), 500);
-      setShowAnswers(prevShowAnswers);
+    setTimeout(async () => {
+      try {
+        const styles = await collectStyles();
+        const html = `<!DOCTYPE html><html><head><title>${documentTitle}${withAnswers ? ' — Answer Key' : ''}</title><meta charset="utf-8">${styles}<style>@page{margin:1.5cm;size:A4}body{font-family:'Inter',system-ui,sans-serif;background:white}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style></head><body>${previewRef.current?.innerHTML || ''}</body></html>`;
+        await printHtml(html, documentTitle + (withAnswers ? ' — Answer Key' : ''));
+      } catch (e) {
+        console.error('Print failed:', e);
+        toast({ title: 'Error', description: 'Could not open print window.', variant: 'destructive' });
+      } finally {
+        setShowAnswers(prevShowAnswers);
+      }
     }, 100);
   };
 

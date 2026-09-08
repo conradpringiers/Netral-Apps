@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
+import { printHtml } from '@/lib/platform';
 import { parseLuateDocument, stripAnswers, extractAnswerKey, LuateQuestion } from '@/core/parser/luateParser';
 import { autoScoreQuestion, requiresManualGrading, decodeSubAnswers, SUB_SEP } from './grading';
 
@@ -211,19 +212,20 @@ export function InterrogateModal({ content }: InterrogateModalProps) {
     </div>`;
   };
 
-  const handleExportStudentPDF = (studentIdx: number) => {
+  const handleExportStudentPDF = async (studentIdx: number) => {
     const s = students[studentIdx];
-    const w = window.open('', '_blank');
-    if (!w) return;
     const total = getStudentTotal(s);
-    let html = `<h1 style="font-family:system-ui">${doc.title} — Correction</h1>`;
-    html += `<p><strong>Student:</strong> ${s.name} &nbsp; <strong>Score:</strong> ${total}/${s.total} (${Math.round(total / s.total * 100)}%)</p><hr>`;
+    let body = `<h1 style="font-family:system-ui">${doc.title} — Correction</h1>`;
+    body += `<p><strong>Student:</strong> ${s.name} &nbsp; <strong>Score:</strong> ${total}/${s.total} (${Math.round(total / s.total * 100)}%)</p><hr>`;
     for (const fq of flatQuestions) {
-      html += renderQuestionPdfBlock(fq, s);
+      body += renderQuestionPdfBlock(fq, s);
     }
-    w.document.write(`<!DOCTYPE html><html><head><title>Correction — ${s.name}</title><style>@page{margin:1.5cm}body{font-family:system-ui;max-width:800px;margin:auto;padding:20px}@media print{body{print-color-adjust:exact}}</style></head><body>${html}</body></html>`);
-    w.document.close();
-    setTimeout(() => w.print(), 300);
+    const html = `<!DOCTYPE html><html><head><title>Correction — ${s.name}</title><style>@page{margin:1.5cm}body{font-family:system-ui;max-width:800px;margin:auto;padding:20px}@media print{body{print-color-adjust:exact}}</style></head><body>${body}</body></html>`;
+    try {
+      await printHtml(html, `Correction — ${s.name}`);
+    } catch (e) {
+      console.error('Print failed:', e);
+    }
   };
 
   return (

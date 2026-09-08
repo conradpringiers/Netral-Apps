@@ -10,6 +10,7 @@ import { parseDeckDocument } from '../parser/deckParser';
 import { getTheme, generateThemeCSS } from '../themes/themes';
 import { SlideBlockRenderer, computeContentScale } from './components/SlideBlockRenderer';
 import { ScaledSlide } from './components/ScaledSlide';
+import { enterFullscreen, exitFullscreen } from '@/lib/platform';
 
 interface PresentationModeProps {
   content: string;
@@ -72,14 +73,9 @@ export function PresentationMode({
   }, [goToPrevSlide, goToNextSlide, onClose, onSlideChange, totalSlides]);
 
   useEffect(() => {
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen().catch(() => {});
-    }
+    enterFullscreen().catch(() => {});
     return () => {
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
-      }
+      exitFullscreen().catch(() => {});
     };
   }, []);
 

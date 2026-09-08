@@ -6,6 +6,7 @@ import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Editor, EditorMethods } from '@/components/Editor';
 import { DocRenderer } from '@/core/renderer/DocRenderer';
 import { useAutosave } from '@/shared/components/AutosaveProvider';
+import { collectStyles, printHtml } from '@/lib/platform';
 import { HelpModal } from '@/shared/components/HelpModal';
 import { TemplatesModal } from '@/shared/components/TemplatesModal';
 import { FileMenu } from '@/shared/components/FileMenu';
@@ -84,22 +85,19 @@ export function DocApp({ initialContent, documentId, onBack }: DocAppProps) {
   const handleExportPDF = async () => {
     setExportOpen(false);
     toast({ title: 'Export PDF', description: 'Preparing document...' });
-    
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      toast({ title: 'Error', description: 'Could not open the print window.', variant: 'destructive' });
-      return;
-    }
-    
+
     const previewElement = previewRef.current;
     if (!previewElement) return;
-    
-    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-      .map(el => el.outerHTML).join('\n');
-    
-    printWindow.document.write(`<!DOCTYPE html><html><head><title>${documentTitle}</title><meta charset="utf-8">${styles}<style>@page{margin:2cm;size:A4}body{font-family:'Inter',system-ui,sans-serif;line-height:1.6;color:#1a1a1a;background:white}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style></head><body>${previewElement.innerHTML}</body></html>`);
-    printWindow.document.close();
-    setTimeout(() => printWindow.print(), 500);
+
+    const styles = await collectStyles();
+    const html = `<!DOCTYPE html><html><head><title>${documentTitle}</title><meta charset="utf-8">${styles}<style>@page{margin:2cm;size:A4}body{font-family:'Inter',system-ui,sans-serif;line-height:1.6;color:#1a1a1a;background:white}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style></head><body>${previewElement.innerHTML}</body></html>`;
+
+    try {
+      await printHtml(html, documentTitle);
+    } catch (e) {
+      console.error('Print failed:', e);
+      toast({ title: 'Error', description: 'Could not open the print window.', variant: 'destructive' });
+    }
   };
 
   const handleExportMarkdown = () => {
