@@ -30,7 +30,7 @@ const blockSyntaxReference = [
     icon: '📄',
     items: [
       { name: 'Title', syntax: '--- My Site Title', description: 'Sets the document/site title' },
-      { name: 'Theme', syntax: 'Theme[Modern]', description: 'Modern, Natural, Latte, Dark Mode, Terminal, Ocean, Solarized, Midnight, Minimal, Sunset, Neon' },
+      { name: 'Theme', syntax: 'Theme[Modern]', description: 'Modern, Natural, Latte, Dark Mode, Terminal, Ocean, Solarized, Midnight, Minimal, Sunset, Neon, Rosé, Forest' },
       { name: 'Logo', syntax: 'Logo[https://... OR Text]', description: 'Image URL or text for site logo' },
       { name: 'Navbar', syntax: 'Navbar[{Home;#}]', description: 'Navigation with {Label;URL} format' },
       { name: 'Header', syntax: 'Header[Type;Title;Desc;URL;Link]', description: 'Types: Classic, BigText, SplitImage' },
@@ -97,7 +97,7 @@ const deckSyntaxReference = [
     icon: '📄',
     items: [
       { name: 'Title', syntax: '--- Presentation Title', description: 'Sets presentation title' },
-      { name: 'Theme', syntax: 'Theme[Modern]', description: '11 themes available' },
+      { name: 'Theme', syntax: 'Theme[Modern]', description: '13 themes available' },
       { name: 'New Slide', syntax: '-- Slide Title', description: 'Creates new slide' },
       { name: 'Logo', syntax: 'Logo[Text or URL]', description: 'Logo on all slides' },
       { name: 'Background', syntax: 'Background[URL]', description: 'Slide background image' },
@@ -149,7 +149,7 @@ const docSyntaxReference = [
     icon: '📄',
     items: [
       { name: 'Title', syntax: '--- My Document', description: 'Sets the document title' },
-      { name: 'Theme', syntax: 'Theme[Modern]', description: '11 themes available' },
+      { name: 'Theme', syntax: 'Theme[Modern]', description: '13 themes available' },
       { name: 'Section', syntax: '--- Section Title', description: 'Creates a main section' },
       { name: 'Subsection', syntax: '-- Sub Section', description: 'Creates a subsection' },
     ],
@@ -298,7 +298,7 @@ const luateSyntaxReference = [
     icon: '📄',
     items: [
       { name: 'Title', syntax: '--- Exam Title', description: 'Sets the exam title' },
-      { name: 'Theme', syntax: 'Theme[Modern]', description: '11 themes available' },
+      { name: 'Theme', syntax: 'Theme[Modern]', description: '13 themes available' },
       { name: 'Subtitle', syntax: 'Subtitle[Grade 10]', description: 'Subtitle under title' },
       { name: 'Duration', syntax: 'Duration[90 minutes]', description: 'Time allowed' },
       { name: 'Instructions', syntax: 'Instructions[Answer all...]', description: 'Exam instructions' },
@@ -343,7 +343,7 @@ Create a complete, professional website on the following topic: [DESCRIBE YOUR T
 
 Rules:
 - First line: --- Site title
-- Then Theme[Modern] (or Natural, Latte, Dark Mode, Terminal, Ocean, Solarized, Midnight, Minimal, Sunset, Neon).
+- Then Theme[Modern] (or Natural, Latte, Dark Mode, Terminal, Ocean, Solarized, Midnight, Minimal, Sunset, Neon, Aurora, Noir).
 - Add Logo[...] and Navbar[{Label;#anchor}].
 - Use Header[...] then several sections starting with -- Title.
 - Enrich with Feature[...], Stats[...], Pricing[...], Gallery[...], FAQ[...], Testimonial[...], Team[...], Steps[...], Metric[...], Timeline[...], Showcase[...].
@@ -357,7 +357,7 @@ Create a [NUMBER]-slide presentation on the topic: [TOPIC].
 
 Rules:
 - First line: --- Presentation title
-- Then Theme[Modern] (or any of the 11 themes).
+- Then Theme[Modern] (or any of the 13 themes).
 - Each slide starts with -- Slide title.
 - Use Bigtitle[...], Stats[...], Feature[...], List[...], Timeline[...], Comparison[...], Agenda[...], Code[...], Graph[...], Column[...], Gallery[...], Speaker[...].
 - Add Notes[...] on some slides for the presenter.
@@ -369,7 +369,7 @@ Write a structured document on the topic: [TOPIC].
 
 Rules:
 - First line: --- Document title
-- Then Theme[Modern] (or any of the 11 themes).
+- Then Theme[Modern] (or any of the 13 themes).
 - Use --- Section title for main parts and -- Subsection for subsections.
 - Use Markdown: # headings, **bold**, *italic*, lists, tables, > quotes and \`\`\` code blocks.
 - Add Callout[info;...], Callout[warning;...], Callout[success;...] and Callout[error;...] for important points.
@@ -580,10 +580,10 @@ export function HelpModal({ mode = 'block' }: HelpModalProps) {
                       <div className="p-2 rounded-md bg-primary/10">
                         <Palette className="h-4 w-4 text-primary" />
                       </div>
-                      <h4 className="font-medium">11 Themes</h4>
+                      <h4 className="font-medium">13 Themes</h4>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Choose from Modern, Natural, Latte, Dark Mode, Terminal, Ocean, Solarized, Midnight, Minimal, Sunset and Neon.
+                      Choose from Modern, Natural, Latte, Dark Mode, Terminal, Ocean, Solarized, Midnight, Minimal, Sunset, Neon, Aurora and Noir.
                     </p>
                   </div>
 

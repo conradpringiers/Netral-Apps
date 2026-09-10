@@ -47,7 +47,7 @@ Bigtitle[Everything you need]
 
 Feature[
 {🚀;Fast;Create pages in minutes with our intuitive syntax}
-{🎨;Themes;11 professional themes ready to use}
+{🎨;Themes;13 professional themes ready to use}
 {📱;Responsive;All pages automatically adapt to mobile}
 ]
 

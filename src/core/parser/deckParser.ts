@@ -454,7 +454,7 @@ This presentation was created with **Netral Deck**.
 
 Feature[
 {🚀;Fast;Create slides in minutes}
-{🎨;Themes;11 professional themes available}
+{🎨;Themes;13 professional themes available}
 {📱;Responsive;Adapts to all screens}
 ]
 

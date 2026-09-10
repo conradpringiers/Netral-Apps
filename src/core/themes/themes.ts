@@ -3,7 +3,7 @@
  * Defines all available themes for Netral Apps
  */
 
-export type ThemeName = 
+export type ThemeName =
   | 'Modern'
   | 'Natural'
   | 'Latte'
@@ -14,7 +14,9 @@ export type ThemeName =
   | 'Midnight'
   | 'Minimal'
   | 'Sunset'
-  | 'Neon';
+  | 'Neon'
+  | 'Rosé'
+  | 'Forest';
 
 export interface ThemeColors {
   background: string;
@@ -73,26 +75,26 @@ export const themes: Record<ThemeName, Theme> = {
   'Natural': {
     name: 'Natural',
     colors: {
-      background: '45 30% 96%',
-      foreground: '30 25% 18%',
-      primary: '152 55% 38%',
+      background: '50 45% 96%',
+      foreground: '120 18% 14%',
+      primary: '80 45% 38%',
       primaryForeground: '0 0% 100%',
-      secondary: '45 25% 90%',
-      secondaryForeground: '30 25% 18%',
-      muted: '45 20% 92%',
-      mutedForeground: '30 15% 45%',
-      accent: '35 70% 55%',
+      secondary: '55 35% 91%',
+      secondaryForeground: '120 18% 14%',
+      muted: '55 30% 92%',
+      mutedForeground: '120 10% 40%',
+      accent: '18 65% 55%',
       accentForeground: '0 0% 100%',
-      border: '45 20% 82%',
-      card: '45 30% 98%',
-      cardForeground: '30 25% 18%',
+      border: '55 25% 84%',
+      card: '50 50% 98%',
+      cardForeground: '120 18% 14%',
       warning: '38 92% 50%',
-      info: '152 55% 38%',
-      success: '152 60% 42%',
+      info: '80 45% 38%',
+      success: '150 50% 40%',
     },
-    fontFamily: "'Lora', Georgia, serif",
-    headingFontFamily: "'Playfair Display', Georgia, serif",
-    borderRadius: '0.75rem',
+    fontFamily: "'DM Sans', system-ui, sans-serif",
+    headingFontFamily: "'Bebas Neue', sans-serif",
+    borderRadius: '0.5rem',
     style: 'light',
   },
   'Latte': {
@@ -223,26 +225,26 @@ export const themes: Record<ThemeName, Theme> = {
   'Midnight': {
     name: 'Midnight',
     colors: {
-      background: '240 25% 6%',
-      foreground: '240 15% 92%',
-      primary: '265 85% 58%',
-      primaryForeground: '0 0% 100%',
-      secondary: '240 20% 12%',
-      secondaryForeground: '240 15% 92%',
-      muted: '240 18% 15%',
-      mutedForeground: '240 12% 58%',
-      accent: '290 75% 52%',
-      accentForeground: '0 0% 100%',
-      border: '240 18% 18%',
-      card: '240 25% 8%',
-      cardForeground: '240 15% 92%',
-      warning: '40 95% 55%',
-      info: '265 85% 58%',
-      success: '145 72% 48%',
+      background: '230 15% 7%',
+      foreground: '220 15% 92%',
+      primary: '190 85% 52%',
+      primaryForeground: '230 15% 7%',
+      secondary: '230 12% 13%',
+      secondaryForeground: '220 15% 92%',
+      muted: '230 12% 15%',
+      mutedForeground: '220 10% 58%',
+      accent: '265 80% 66%',
+      accentForeground: '230 15% 7%',
+      border: '230 12% 18%',
+      card: '230 14% 10%',
+      cardForeground: '220 15% 92%',
+      warning: '45 93% 55%',
+      info: '190 85% 52%',
+      success: '150 60% 45%',
     },
-    fontFamily: "'DM Sans', system-ui, sans-serif",
-    headingFontFamily: "'Outfit', system-ui, sans-serif",
-    borderRadius: '0.75rem',
+    fontFamily: "'IBM Plex Sans', system-ui, sans-serif",
+    headingFontFamily: "'Archivo Black', sans-serif",
+    borderRadius: '0.5rem',
     style: 'dark',
   },
   'Minimal': {
@@ -317,6 +319,56 @@ export const themes: Record<ThemeName, Theme> = {
     },
     fontFamily: "'Orbitron', system-ui, sans-serif",
     headingFontFamily: "'Audiowide', Impact, sans-serif",
+    borderRadius: '0.5rem',
+    style: 'dark',
+  },
+  'Rosé': {
+    name: 'Rosé',
+    colors: {
+      background: '350 40% 98%',
+      foreground: '335 25% 18%',
+      primary: '343 58% 48%',
+      primaryForeground: '0 0% 100%',
+      secondary: '345 40% 95%',
+      secondaryForeground: '335 25% 18%',
+      muted: '345 30% 94%',
+      mutedForeground: '335 12% 46%',
+      accent: '30 70% 55%',
+      accentForeground: '0 0% 100%',
+      border: '345 25% 90%',
+      card: '0 0% 100%',
+      cardForeground: '335 25% 18%',
+      warning: '38 92% 50%',
+      info: '343 58% 48%',
+      success: '150 45% 42%',
+    },
+    fontFamily: "'Quicksand', system-ui, sans-serif",
+    headingFontFamily: "'Outfit', system-ui, sans-serif",
+    borderRadius: '0.75rem',
+    style: 'light',
+  },
+  'Forest': {
+    name: 'Forest',
+    colors: {
+      background: '150 25% 9%',
+      foreground: '150 25% 92%',
+      primary: '152 55% 45%',
+      primaryForeground: '0 0% 100%',
+      secondary: '150 22% 15%',
+      secondaryForeground: '150 25% 92%',
+      muted: '150 20% 15%',
+      mutedForeground: '150 12% 55%',
+      accent: '42 85% 58%',
+      accentForeground: '150 25% 9%',
+      border: '150 20% 20%',
+      card: '150 22% 12%',
+      cardForeground: '150 25% 92%',
+      warning: '45 93% 55%',
+      info: '152 55% 45%',
+      success: '150 60% 42%',
+    },
+    fontFamily: "'Nunito', system-ui, sans-serif",
+    headingFontFamily: "'Space Grotesk', system-ui, sans-serif",
     borderRadius: '0.5rem',
     style: 'dark',
   },

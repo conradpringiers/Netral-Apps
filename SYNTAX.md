@@ -37,7 +37,7 @@ Theme[Modern]
 
 Available themes:
 
-`Modern` · `Natural` · `Latte` · `Dark Mode` · `Terminal` · `Ocean` · `Solarized` · `Midnight` · `Minimal` · `Sunset` · `Neon`
+`Modern` · `Natural` · `Latte` · `Dark Mode` · `Terminal` · `Ocean` · `Solarized` · `Midnight` · `Minimal` · `Sunset` · `Neon` · `Rosé` · `Forest`
 
 ### Inline formatting
 
@@ -74,7 +74,7 @@ Netral Block creates full websites with sections, navigation and interactive com
 | Directive | Example | Description |
 |-----------|---------|-------------|
 | Title | `--- My Site` | Site title (first line) |
-| Theme | `Theme[Modern]` | One of the 11 themes |
+| Theme | `Theme[Modern]` | One of the 13 themes |
 | Logo | `Logo[My Brand]` or `Logo[https://.../logo.png]` | Navbar logo (text or image URL) |
 | Navbar | `Navbar[{Home;#home}{Pricing;#pricing}]` | Navigation items, `{Label;URL}` |
 | Header | `Header[Type;Title;Description;ImageURL;Link]` | Hero section |
@@ -162,7 +162,7 @@ Netral Deck creates presentation slides with fullscreen and presenter modes.
 | Directive | Example | Description |
 |-----------|---------|-------------|
 | Title | `--- My Presentation` | Presentation title |
-| Theme | `Theme[Modern]` | One of the 11 themes |
+| Theme | `Theme[Modern]` | One of the 13 themes |
 | New slide | `-- Slide Title` | Starts a new slide |
 | Logo | `Logo[Text or URL]` | Logo shown on every slide |
 | Background | `Background[https://.../image.jpg]` | Slide background image |
@@ -216,7 +216,7 @@ Netral Doc creates professional documents optimized for PDF export via the brows
 | Directive | Example | Description |
 |-----------|---------|-------------|
 | Title | `--- My Document` | Document title |
-| Theme | `Theme[Modern]` | One of the 11 themes |
+| Theme | `Theme[Modern]` | One of the 13 themes |
 | Section | `--- Section Title` | Top-level section (level 1) |
 | Subsection | `-- Subsection Title` | Subsection (level 2) |
 
@@ -312,7 +312,7 @@ Netral Luate creates exams and quizzes. Questions are grouped into sections and 
 | Directive | Example | Description |
 |-----------|---------|-------------|
 | Title | `--- Mathematics Final Exam` | Exam title |
-| Theme | `Theme[Modern]` | One of the 11 themes |
+| Theme | `Theme[Modern]` | One of the 13 themes |
 | Subtitle | `Subtitle[Grade 10 — Semester 2]` | Subtitle under title |
 | Duration | `Duration[90 minutes]` | Time allowed |
 | Instructions | `Instructions[Answer all questions.]` | Exam instructions |
